@@ -79,3 +79,5 @@ clean :
 #suppression de tout ce qui peut etre regenere
 mrproper : clean
 	@rm -f $(DEST)$(PROG)
+	@rm -f $(DEST)$(CLIENT)
+	@rm -f $(DEST)$(SERVER)
