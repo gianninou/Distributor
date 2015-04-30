@@ -30,7 +30,6 @@ int getNumber(Generator* gen){
 
 void setResult(Generator* gen, int number, char* result){
 	/*TODO ameliorer le malloc*/
-
 	Elem* elem = liste_get(gen->runningList,number);
 	if (elem){
 		printf("Acceptation de %d : %s\n",number, result );

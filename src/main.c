@@ -30,7 +30,7 @@ void testGen(){
 	showGenerator(gen);
 	setResult(gen, 5, "tata");
 	showGenerator(gen);
-	setResult(gen, 8, "tutu");
+	setResult(gen, 18, "tutu");
 	showGenerator(gen);
 	printf("Génération de %d\n", getNumber(gen));
 	

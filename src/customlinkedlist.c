@@ -60,9 +60,6 @@ Elem* liste_tete(List* l){
 
 Elem* liste_get(List* l, int nb){
 	Elem* e=l->tete;
-	if(nb>=l->size){
-		return NULL;
-	}
 	while(e && e->number!=nb){
 		e=e->suivant;
 	}
