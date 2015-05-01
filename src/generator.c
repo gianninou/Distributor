@@ -6,7 +6,7 @@ Generator* newGenerator(){
 	gen->number=0;
 	gen->results = liste_init();
 	gen->runningList = liste_init();
-	gen->output = fopen("output.txt","w+");
+	gen->output = fopen("output/output.txt","w+");
 	if(!gen->output){
 		perror("Erreur ouverture output.txt");
 		exit(1);

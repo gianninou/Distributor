@@ -75,6 +75,7 @@ $(DEST)customlinkedlist.o : $(SRC)customlinkedlist.c $(SRC)customlinkedlist.h
 #creation du dossier bin
 directories:
 	@mkdir -p $(DEST) 2>/dev/null
+	@mkdir -p output 2> /dev/null
 
 #destruction de tous les fichiers intermediaires crees
 clean : 
