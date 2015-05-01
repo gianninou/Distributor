@@ -5,6 +5,25 @@ void testCliExt(){
 
 }
 
+void testRemoteClient(){
+	ListRemoteClient* l = listeRemote_init();
+	RemoteClient* rc1 = (RemoteClient*)malloc(sizeof(RemoteClient));
+	rc1->id=1;
+	RemoteClient* rc2 = (RemoteClient*)malloc(sizeof(RemoteClient));
+	rc2->id=2;
+	RemoteClient* rc3 = (RemoteClient*)malloc(sizeof(RemoteClient));
+	rc3->id=3;
+	listeRemote_view(l);
+	listeRemote_add_last(l,rc1);
+	listeRemote_view(l);
+	listeRemote_add_last(l,rc2);
+	listeRemote_view(l);
+	listeRemote_add_last(l,rc3);
+	listeRemote_view(l);
+	listeRemote_supprime(l,listeRemote_get(l,rc2->id));
+	listeRemote_view(l);
+}
+
 
 void testGen(){
 	Generator* gen = newGenerator();
@@ -38,8 +57,9 @@ void testGen(){
 }
 
 int main(int argc, char* argv[]){
-	testGen();
-	testCliExt();
+	testRemoteClient();
+	/*testGen();
+	testCliExt();*/
 	return 0;
 }
 

@@ -27,12 +27,12 @@ client : $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $
 	$(CC)  $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(CLIENT) 
 
 
-server : $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
-	$(CC)  $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(SERVER) 
+server : $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
+	$(CC)  $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(SERVER) 
 
 
-test : $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
-	$(CC) $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(TEST) 
+test : $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
+	$(CC) $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(TEST) 
 
 
 
@@ -56,6 +56,9 @@ $(DEST)generator.o : $(SRC)generator.c $(SRC)generator.h
 
 $(DEST)customlinkedlist.o : $(SRC)customlinkedlist.c $(SRC)customlinkedlist.h
 	$(CC) $(CFLAGS) $(LIB) -c $(SRC)customlinkedlist.c -o $(DEST)customlinkedlist.o
+
+$(DEST)listRemoteClient.o : $(SRC)listRemoteClient.c $(SRC)listRemoteClient.h
+	$(CC) $(CFLAGS) $(LIB) -c $(SRC)listRemoteClient.c -o $(DEST)listRemoteClient.o
 
 #########################################################################
 

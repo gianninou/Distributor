@@ -13,6 +13,8 @@ typedef struct element{
 
 	int number;
 	char* res;
+
+	
 } Elem;
 
 typedef struct custom{

@@ -11,5 +11,6 @@
 
 #include "client.h"
 #include "generator.h"
+#include "listRemoteClient.h"
 
 #endif

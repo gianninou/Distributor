@@ -7,7 +7,9 @@
 #include "generator.h"
 #include "utils.h"
 
-
+typedef struct remoteClient{
+	int id;
+}RemoteClient;
 
 
 #endif
