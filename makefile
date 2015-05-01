@@ -20,7 +20,7 @@ SERVER = Server
 CLIENT = Client
 
 #definition de la cible a reconstruire
-all : directories $(DEST)$(PROG)
+all : directories client server test
 
 client : $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
 	$(CC)  $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(CLIENT) 
@@ -30,13 +30,13 @@ server : $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedli
 	$(CC)  $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(SERVER) 
 
 
-$(DEST)$(PROG) : $(DEST)main.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
-	$(CC) $(DEST)main.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(PROG) 
+test : $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
+	$(CC) $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(PROG) 
 
 
 
-$(DEST)main.o : $(SRC)main.c $(SRC)main.h
-	$(CC) $(CFLAGS) -c $(SRC)main.c -o $(DEST)main.o
+$(DEST)test.o : $(SRC)test.c $(SRC)test.h
+	$(CC) $(CFLAGS) -c $(SRC)test.c -o $(DEST)test.o
 
 $(DEST)server.o : $(SRC)server.c $(SRC)server.h
 	$(CC) $(CFLAGS) $(LIB) -c $(SRC)server.c -o $(DEST)server.o
