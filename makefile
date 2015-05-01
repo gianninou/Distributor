@@ -22,8 +22,8 @@ CLIENT = Client
 #definition de la cible a reconstruire
 all : directories $(DEST)$(PROG)
 
-client : $(DEST)client.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
-	$(CC)  $(DEST)client.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(CLIENT) 
+client : $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
+	$(CC)  $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(CLIENT) 
 
 
 server : $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
@@ -43,6 +43,9 @@ $(DEST)server.o : $(SRC)server.c $(SRC)server.h
 
 $(DEST)client.o : $(SRC)client.c $(SRC)client.h
 	$(CC) $(CFLAGS) $(LIB) -c $(SRC)client.c -o $(DEST)client.o
+
+$(DEST)clientExec.o : $(SRC)clientExec.c $(SRC)clientExec.h
+	$(CC) $(CFLAGS) $(LIB) -c $(SRC)clientExec.c -o $(DEST)clientExec.o
 
 $(DEST)utils.o : $(SRC)utils.c $(SRC)utils.h
 	$(CC) $(CFLAGS) $(LIB) -c $(SRC)utils.c -o $(DEST)utils.o
