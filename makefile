@@ -16,6 +16,7 @@ LIB = -lm
 
 #nom de l executable
 PROG = Distributor
+TEST = Test
 SERVER = Server
 CLIENT = Client
 
@@ -31,7 +32,7 @@ server : $(DEST)server.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedli
 
 
 test : $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
-	$(CC) $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(PROG) 
+	$(CC) $(DEST)test.o  $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(TEST) 
 
 
 
@@ -81,6 +82,7 @@ clean :
 
 #suppression de tout ce qui peut etre regenere
 mrproper : clean
+	@rm -f $(DEST)$(TEST)
 	@rm -f $(DEST)$(PROG)
 	@rm -f $(DEST)$(CLIENT)
 	@rm -f $(DEST)$(SERVER)
