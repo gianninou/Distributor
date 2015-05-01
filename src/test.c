@@ -7,12 +7,9 @@ void testCliExt(){
 
 void testRemoteClient(){
 	ListRemoteClient* l = listeRemote_init();
-	RemoteClient* rc1 = (RemoteClient*)malloc(sizeof(RemoteClient));
-	rc1->id=1;
-	RemoteClient* rc2 = (RemoteClient*)malloc(sizeof(RemoteClient));
-	rc2->id=2;
-	RemoteClient* rc3 = (RemoteClient*)malloc(sizeof(RemoteClient));
-	rc3->id=3;
+	RemoteClient* rc1 = newRemoteClient(1);
+	RemoteClient* rc2 = newRemoteClient(2);
+	RemoteClient* rc3 = newRemoteClient(3);
 	listeRemote_view(l);
 	listeRemote_add_last(l,rc1);
 	listeRemote_view(l);

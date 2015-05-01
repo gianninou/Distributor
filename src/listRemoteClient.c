@@ -10,12 +10,15 @@ ListRemoteClient* listeRemote_init(){
 }
 
 void listeRemote_view(ListRemoteClient* l){
+	printf("Liste RemoteClient : \n");
 	if(l->size!=0){
 		ElemRemoteClient* e1 = l->tete;
 		while(e1){
-			printf("Rclient %d\n",e1->remoteClient->id );
+			printRemoteClient(e1->remoteClient);
 			e1 = e1->suivant;
 		}
+	}else{
+		printf("Vide\n");
 	}
 }
 

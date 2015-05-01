@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "utils.h"
-#include "server.h"
+#include "remoteClient.h"
 
 typedef struct elementRemoteClient{
 	struct elementRemoteClient* precedent;
