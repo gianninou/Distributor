@@ -52,29 +52,29 @@ int main(int argc, char* argv[]){
 
 	/* debut de boucle sur le programme externe */
 	
-	printf("CNX\n");
+	/* CNX */
 	w=write(serverSocket,"CNX",3);
 	if(w==-1){
 		perror("Erreur ecriture");
 		exit(1);
 	}
-	/*fgets(buff,MAX_LENGTH-1,stdin);*/
+	
+
+	/* attente COK */
 	r=read(serverSocket,buff,MAX_LENGTH-1);
 	if(r==-1){
 		perror("Erreur read");
 		exit(1);
 	}
-	printf("recu : %s\n",buff );
 	if(strncmp(buff,"COK",3)){
 		printf("|%s|\n",buff );
 		printf("Erreur de connexion\n");
 		exit(1);
 	}
 
-	
 	while(continu){
+
 		/* on envoie un GET */
-		/*printf("GET\n");*/
 		w=write(serverSocket,"GET\n",4);
 		if(w==-1){
 			perror("Erreur ecriture");
@@ -82,8 +82,6 @@ int main(int argc, char* argv[]){
 		}
 
 		/* On recupere le nombre du serveur */
-		/* TODO mettre un socket */
-		/*fgets(buff,MAX_LENGTH-1,stdin);*/
 		r=read(serverSocket,buff,MAX_LENGTH-1);
 		if(r==-1){
 			perror("Erreur read");
@@ -115,20 +113,33 @@ int main(int argc, char* argv[]){
 		}else{
 			/* Erreur retour GET */
 			/* Attendre un certain temps */
+			printf("ERREUR GET : |%s|\n",buff );
 		}
 
 
 	}
 
-	printf("DCX\n");
-	fgets(buff,MAX_LENGTH-1,stdin);
+	/* DCX */
+	w=write(serverSocket,"DCX",3);
+	if(w==-1){
+		perror("Erreur ecriture");
+		exit(1);
+	}
+
+	/* attente DOK */
+	r=read(serverSocket,buff,MAX_LENGTH-1);
+	if(r==-1){
+		perror("Erreur read");
+		exit(1);
+	}
 	if(!strncmp(buff,"DOK",3)){
 		printf("Fin du client\n");
 	}else{
-		printf("Erreur coté serveur\n");
+		printf("Erreur coté serveur : |%s|\n",buff);
 	}
 
 	/* Netoyage memoire */
+	close(serverSocket);
 
 
 	return 0;
