@@ -6,6 +6,7 @@ static int thread_continu;
 void *thread_ping(void *arg){
     /* Pour enlever le warning */
     (void) arg;
+
     int socketServeur;
 
     socketServeur=socket(AF_INET,SOCK_DGRAM,0);
@@ -45,6 +46,8 @@ void *thread_ping(void *arg){
     socklen_t len_r;
     char buff[100];
 
+
+    /* Boucle d'attente des PING */
     while(thread_continu){
     	len_r=sizeof(addr_r);
 	    cnt=recvfrom(socketServeur,buff,sizeof(buff),0,(struct sockaddr*)&addr_r,&len_r);
@@ -66,11 +69,12 @@ void *thread_ping(void *arg){
 
 	}
 
-	
-
 
     pthread_exit(NULL);
 } 
+
+
+
 
 
 int main(int argc, char* argv[]){
@@ -134,15 +138,15 @@ int main(int argc, char* argv[]){
 	
 
 
-
-
-
+	/***********************/
+	/*  Création du socket */
+	/***********************/
 	serverSocket = socket(PF_INET, SOCK_STREAM, 0);
 	if (serverSocket <0) {
 		perror ("erreur socket");
 		exit (1);
 	}
-
+	/* Connexion au serveur */
 	error = connect (serverSocket, (struct sockaddr *) &serv_addr,  sizeof(serv_addr) );
 	if(error < 0){
 		perror ("erreur connect");
@@ -151,16 +155,13 @@ int main(int argc, char* argv[]){
 
 
 
-
+	/***********************/
 	/* Lancement du thread */
+	/***********************/
 	if(pthread_create(&thread, NULL, thread_ping, NULL) == -1) {
 	    perror("pthread_create");
 	    return EXIT_FAILURE;
     } 
-
-
-
-
 
 
 	/* s'enregistrer sur le serveur, récuperer son ID */
@@ -210,19 +211,15 @@ int main(int argc, char* argv[]){
 			/* On récupere le resultat du cli ext, on l'envoie au serveur (et on s'assure de la bonne reception en option) */
 			if(res){
 				sprintf(buff,"RES %d:%s\n", i, res);
-				w=write(serverSocket,buff,strlen(buff));
-				if(w==-1){
-					perror("Erreur ecriture");
-					exit(1);
-				}
 			}else{
 				sprintf(buff,"RES %d:#\n",i);
-				w=write(serverSocket,buff,strlen(buff));
-				if(w==-1){
-					perror("Erreur ecriture");
-					exit(1);
-				}
 			}
+			w=write(serverSocket,buff,strlen(buff));
+			if(w==-1){
+				perror("Erreur ecriture");
+				exit(1);
+			}
+			
 		}else{
 			/* Erreur retour GET */
 			/* Attendre un certain temps */
@@ -232,8 +229,6 @@ int main(int argc, char* argv[]){
 		if(!--numb){
 			continu=0;
 		}
-
-
 	}
 
 	/* DCX */
