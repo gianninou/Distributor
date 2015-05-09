@@ -15,6 +15,12 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include <getopt.h>
+#include <pthread.h>
+
 #include "clientExec.h"
+
+#define PORT_MULTICAST 10000
+#define GROUP_MULTICAST "239.13.37.92"
 
 #endif

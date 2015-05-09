@@ -20,7 +20,7 @@ typedef struct clientExec{
 } ClientExec;
 
 ClientExec* newClientExec();
-void deleteClientExec(ClientExec* cli);
+void deleteClienExec(ClientExec* cli);
 
 char* execClientExec(ClientExec* cli, int nb);
 

@@ -13,7 +13,7 @@ CFLAGS = -Wall
 # -ansi -g
 
 #librairies
-LIB = -lm
+LIB = -lm -lpthread
 
 #nom de l executable
 PROG = Distributor
@@ -25,20 +25,20 @@ CLIENT = Client
 all : directories client server test
 
 client : $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
-	$(CC)  $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(CLIENT) 
+	$(CC)  $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(CLIENT) $(LIB)
 
 
 server : $(DEST)server.o $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
-	$(CC)  $(DEST)server.o $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(SERVER) 
+	$(CC)  $(DEST)server.o $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(SERVER) $(LIB) 
 
 
 test : $(DEST)test.o  $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
-	$(CC) $(DEST)test.o  $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(TEST) 
+	$(CC) $(DEST)test.o  $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(TEST) $(LIB)
 
 
 
 $(DEST)test.o : $(SRC)test.c $(SRC)test.h
-	$(CC) $(CFLAGS) -c $(SRC)test.c -o $(DEST)test.o
+	$(CC) $(CFLAGS) $(LIB) -c $(SRC)test.c -o $(DEST)test.o
 
 $(DEST)server.o : $(SRC)server.c $(SRC)server.h
 	$(CC) $(CFLAGS) $(LIB) -c $(SRC)server.c -o $(DEST)server.o

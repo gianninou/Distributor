@@ -10,10 +10,16 @@ ClientExec* newClientExec(){
 }
 
 
-void deleteClienExect(ClientExec* cli){
-	free(cli->prog);
-	free(cli->arg1);
-	free(cli->arg2);
+void deleteClienExec(ClientExec* cli){
+	/*if(cli->prog){
+		free(cli->prog);	
+	}
+	if(cli->arg1){
+		free(cli->arg1);
+	}
+	if(cli->arg2){
+		free(cli->arg2);
+	}*/
 	free(cli);
 }
 
