@@ -5,7 +5,9 @@ static int thread_continu;
 
 void *thread_ping(void *arg){
     /* Pour enlever le warning */
-	(void) arg;
+	/*(void) arg;*/
+	DATA* d = (DATA*)arg; 
+	printf("thread -> socket : %d\n",d->socket );
 
 	int socketServeur;
 
@@ -57,12 +59,21 @@ void *thread_ping(void *arg){
 		}
 
 		if(!strncmp(buff,"PIN",3)){
+			int w=write(d->socket,"PON",3);
+			if(w==-1){
+				perror("Erreur ecriture");
+				exit(1);
+			}
+
+			/* VERSION UDP */
+			/*
 			printf("PING recu\n");
 			sprintf(buff,"PON");
 			cnt=sendto(socketServeur,buff,strlen(buff),0,(struct sockaddr*)&addr_r,len_r);
 			if(cnt!=strlen(buff)){
 				printf("erreur thread sendto\n");
 			}
+			*/
 		}else{
 			printf("ERREUR thread recu : %s\n",buff );
 		}
@@ -92,6 +103,7 @@ int main(int argc, char* argv[]){
 	/* Creation du thread pour les PING */
 	pthread_t thread;
 	thread_continu=1;
+	DATA* data;
 
 	
 
@@ -155,10 +167,14 @@ int main(int argc, char* argv[]){
 
 
 
+
 	/***********************/
 	/* Lancement du thread */
 	/***********************/
-	if(pthread_create(&thread, NULL, thread_ping, NULL) == -1) {
+	data = (DATA*)xmalloc(sizeof(DATA)*1);
+	data->socket=serverSocket;
+
+	if(pthread_create(&thread, NULL, thread_ping, data) == -1) {
 		perror("pthread_create");
 		return EXIT_FAILURE;
 	} 
