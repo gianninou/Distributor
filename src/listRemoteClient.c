@@ -9,7 +9,7 @@ ListRemoteClient* listeRemote_init(){
 	return l;
 }
 
-void listeRemote_view(ListRemoteClient* l){
+void listeRemote_print(ListRemoteClient* l){
 	printf("Liste RemoteClient : \n");
 	if(l->size!=0){
 		ElemRemoteClient* e1 = l->tete;
@@ -109,19 +109,6 @@ int listeRemote_client_exists(ListRemoteClient* l, RemoteClient* rc) {
 		}
 	}
 	return found;
-}
-
-
-void listeRemote_print(ListRemoteClient* l) {
-	if(l->size == 0) {
-		return;
-	}
-	ElemRemoteClient* elemClient = l->tete;
-	int i = 0;
-	for( ; i < l->size ; i++) {
-		printRemoteClient(elemClient->remoteClient);
-		elemClient = elemClient->suivant;
-	}
 }
 
 int listeRemote_get_size(ListRemoteClient* l) {
