@@ -94,7 +94,7 @@ int main(int argc, char* argv[]){
 	ClientExec* cli = newClientExec();
 	int error;
 	int continu=1;
-	int r,w;
+	int r,w,s;
 	char buff[MAX_LENGTH];
 
 	int numb=10;
@@ -140,49 +140,82 @@ int main(int argc, char* argv[]){
 
 
 	int serverSocket;
-	struct sockaddr_in  serv_addr;
+	struct addrinfo hints, *rp;
+	struct sockaddr_in6  serv_addr;
 
-	memset ( (char *) &serv_addr, 0, sizeof(serv_addr) );
+	memset ( (char *) &hints, 0, sizeof(serv_addr) );
 	/* Compatibilite IPv6 */
-	serv_addr.sin_family = PF_INET;
-	serv_addr.sin_port = htons(atoi(argv[2]));
 
-	
+	struct addrinfo *result;
+
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+	hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
+	hints.ai_flags = 0;
+	hints.ai_protocol = 0;
+
+	s = getaddrinfo(argv[1], argv[2], &hints, &result);
+	if (s != 0) {
+		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+		exit(EXIT_FAILURE);
+	}
 
 
 	/***********************/
 	/*  Création du socket */
 	/***********************/
-	serverSocket = socket(PF_INET, SOCK_STREAM, 0);
+	 for (rp = result; rp != NULL; rp = rp->ai_next) {
+	 	printf("a\n");
+        serverSocket = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
+		if (serverSocket==-1){
+			printf("sock : %d\n",serverSocket );
+			continue;
+		}
+		printf("sock : %d\n",serverSocket );
+		error = connect (serverSocket, rp->ai_addr, rp->ai_addrlen );
+		if(error !=-1 ){
+			break;
+		}else{
+			perror ("erreur connect");
+			exit (1);
+		}
+	}
+	
 	if (serverSocket <0) {
 		perror ("erreur socket");
 		exit (1);
 	}
-	/* Connexion au serveur */
-	error = connect (serverSocket, (struct sockaddr *) &serv_addr,  sizeof(serv_addr) );
-	if(error < 0){
-		perror ("erreur connect");
-		exit (1);
+	if(rp==NULL){
+		printf("ERROR\n");
+		exit(1);
 	}
 
 
+	/* Connexion au serveur */
+	/*error = connect (serverSocket, (struct sockaddr *) &serv_addr,  sizeof(serv_addr) );
+	if(error < 0){
+		perror ("erreur connect");
+		exit (1);
+	}*/
 
 
 	/***********************/
 	/* Lancement du thread */
 	/***********************/
+	/*
 	data = (DATA*)xmalloc(sizeof(DATA)*1);
 	data->socket=serverSocket;
 
 	if(pthread_create(&thread, NULL, thread_ping, data) == -1) {
 		perror("pthread_create");
 		return EXIT_FAILURE;
-	} 
-
+	} */
 
 	/* s'enregistrer sur le serveur, récuperer son ID */
 	/* CNX */
 	w=write(serverSocket,"CNX",3);
+	printf("toto\n");
+	printf("w : %d\n",w );
 	if(w==-1){
 		perror("Erreur ecriture");
 		exit(1);
