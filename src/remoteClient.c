@@ -26,5 +26,5 @@ void deleteRemoteClient(RemoteClient* rc){
 }
 
 void printRemoteClient(RemoteClient* rc){
-	printf("RemoteM : id = %d\n ip = %s \n port = %s \n data to send = %s \n last pong sent = %d\n", rc->id, rc->ip, rc->port, rc->data_to_send, rc->timestamp_last_pong_sent);
+	printf("RemoteClient : id = %d\n ip = %s \n port = %s \n data to send = %s \n last pong sent = %d\n\n", rc->id, rc->ip, rc->port, rc->data_to_send, rc->timestamp_last_pong_sent);
 }
