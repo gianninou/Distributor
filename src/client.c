@@ -199,17 +199,18 @@ int main(int argc, char* argv[]){
 	}*/
 
 
+
 	/***********************/
 	/* Lancement du thread */
 	/***********************/
-	/*
+	
 	data = (DATA*)xmalloc(sizeof(DATA)*1);
 	data->socket=serverSocket;
 
 	if(pthread_create(&thread, NULL, thread_ping, data) == -1) {
 		perror("pthread_create");
 		return EXIT_FAILURE;
-	} */
+	} 
 
 	/* s'enregistrer sur le serveur, récuperer son ID */
 	/* CNX */
