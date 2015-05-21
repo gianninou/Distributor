@@ -46,7 +46,7 @@ void listeRemote_add_last(ListRemoteClient* l,RemoteClient* rm){
 	}else{
 		l->queue->suivant=el;
 		el->precedent=l->queue;
-		l->queue=el;	
+		l->queue=el;
 	}
 	l->size++;
 }
@@ -69,7 +69,7 @@ int listeRemote_a_un_suivant(ListRemoteClient* l, ElemRemoteClient* el){
 }
 
 ElemRemoteClient* listeRemote_suivant(ListRemoteClient* l, ElemRemoteClient* el){
-	return el->suivant;	
+	return el->suivant;
 }
 
 
@@ -92,6 +92,42 @@ void listeRemote_supprime(ListRemoteClient* l, ElemRemoteClient* el){
 	l->size--;
 }
 
+int listeRemote_client_exists(ListRemoteClient* l, RemoteClient* rc) {
+	if(l->size == 0) {
+		return 0;
+	}
+	int found = 0;
+	ElemRemoteClient* current = l->tete;
+	if(rc->id == current->remoteClient->id) {
+		return 1;
+	}
+	int i = 1;
+	while(i < l->size && !found) {
+		current = current->suivant;
+		if(rc->id == current->remoteClient->id) {
+			found = 1;
+		}
+	}
+	return found;
+}
+
+
+void listeRemote_print(ListRemoteClient* l) {
+	if(l->size == 0) {
+		return;
+	}
+	ElemRemoteClient* elemClient = l->tete;
+	int i = 0;
+	for( ; i < l->size ; i++) {
+		printRemoteClient(elemClient->remoteClient);
+		elemClient = elemClient->suivant;
+	}
+}
+
+int listeRemote_get_size(ListRemoteClient* l) {
+	return l->size;
+}
+
 
 /**************************************/
 /*              ELEM                  */
@@ -109,4 +145,3 @@ ElemRemoteClient* elemRemote_init(RemoteClient* rm){
 void elemRemote_dest(ElemRemoteClient* el){
 	free(el);
 }
-

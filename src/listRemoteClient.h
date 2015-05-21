@@ -34,6 +34,9 @@ int listeRemote_a_un_suivant(ListRemoteClient* l, ElemRemoteClient* el);
 ElemRemoteClient* listeRemote_suivant(ListRemoteClient* l, ElemRemoteClient* el);
 void listeRemote_supprime(ListRemoteClient* l, ElemRemoteClient* el);
 void listeRemote_view(ListRemoteClient* l);
+void listeRemote_print(ListRemoteClient* l);
+int listeRemote_client_exists(ListRemoteClient* l, RemoteClient* rc);
+int listeRemote_get_size(ListRemoteClient* l);
 
 /*void liste_free(ListRemoteClient* l);*/
 
