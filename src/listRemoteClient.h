@@ -36,6 +36,7 @@ void listeRemote_supprime(ListRemoteClient* l, ElemRemoteClient* el);
 void listeRemote_print(ListRemoteClient* l);
 int listeRemote_client_exists(ListRemoteClient* l, RemoteClient* rc);
 int listeRemote_get_size(ListRemoteClient* l);
+int listeRemote_get_i_socket(ListRemoteClient* l, int i);
 
 /*void liste_free(ListRemoteClient* l);*/
 

@@ -28,8 +28,9 @@ void listeRemote_dest(ListRemoteClient* l){
 		ElemRemoteClient* e1 = l->tete;
 		ElemRemoteClient* e2=e1;
 		while(e2){
+			e1=e2;
 			e2=e1->suivant;
-			/* free e1->remoteCLient */
+			deleteRemoteClient(e1->remoteClient);
 			free(e1);
 		}
 	}
@@ -113,6 +114,26 @@ int listeRemote_client_exists(ListRemoteClient* l, RemoteClient* rc) {
 
 int listeRemote_get_size(ListRemoteClient* l) {
 	return l->size;
+}
+
+int listeRemote_get_i_socket(ListRemoteClient* l, int i){
+	int found;
+	ElemRemoteClient* e1 = (ElemRemoteClient*) NULL;
+	if(l->size!=0){
+		ElemRemoteClient* e1 = l->tete;
+		found = e1->remoteClient->dialog_socket == i;
+		while(e1 && !found){
+			e1 = e1->suivant;
+			found = e1->remoteClient->dialog_socket == i;
+		}
+	}else{
+		return -1;
+	}
+	if(found) {
+		return e1->remoteClient->dialog_socket;
+	} else {
+		return -1;
+	}
 }
 
 

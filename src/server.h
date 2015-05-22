@@ -28,7 +28,7 @@
 #define MAX_CLIENTS 100
 #define BUFF_LEN 100
 
-int adpu(Generator* gen, char* message, char* reponse);
+int apdu(Generator* gen, char* message, char* reponse);
 void *thread_ping(void *arg);
 
 #endif

@@ -12,17 +12,17 @@ int main(int argc, char* argv[]){
     /* INITIALISATION */
     /* liste de client, Generator, sockets, listen, bind, ... */
 	pthread_t thread;
-	char* reponse = (char*)xmalloc(sizeof(char)*BUFF_LEN);
+	char* response = (char*)xmalloc(sizeof(char)*BUFF_LEN);
 	ListRemoteClient* clients_list = listeRemote_init();
 	Generator* gen = newGenerator();
 
-    int sockfd;//, nbfd, newsockfd;
+    int sockfd, nbfd, newsockfd;
     struct sockaddr_in  serv_addr, cli_addr;
     //int tab_fd[FD_SETSIZE];
     fd_set rset, pset;
     socklen_t clilen;
 
-    int maxfdp1;
+    int maxfdp1, sockcli, i, nrcv, nsnd;
 
     /* Verifier le nombre de paramètre en entrée */
     if (argc != 2){
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]){
     if(pthread_create(&thread, NULL, thread_ping, NULL) == -1) {
     	perror("pthread_create");
     	return EXIT_FAILURE;
-    } 
+    }
 
 
     /* boucle attente client */
@@ -77,20 +77,47 @@ int main(int argc, char* argv[]){
     for(;;) {
     	pset = rset;
 
-        //nbfd =
-    	select(maxfdp1, &pset, NULL, NULL, NULL);
+        nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
 
-    	if(FD_ISSET(sockfd, &pset)) {
-    		clilen = sizeof(cli_addr);
-            //newsockfd = 
-    		accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-    		RemoteClient* rm = newRemoteClient(cli_addr);
-    		if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
-    			listeRemote_add_last(clients_list,rm);
-    		}
-    	}
-    	listeRemote_print(clients_list);
-    	printf("\n\n");
+        if(FD_ISSET(sockfd, &pset)) {
+            clilen = sizeof(cli_addr);
+            newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+            RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
+            if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
+                listeRemote_add_last(clients_list,rm);
+                FD_SET(newsockfd, &rset);
+                if(newsockfd >= maxfdp1) {
+                    maxfdp1 = newsockfd + 1;
+                }
+                nbfd--;
+            }
+        }
+        listeRemote_print(clients_list);
+        printf("\n\n");
+
+        i = 3;
+        char message[BUFF_LEN];
+        while((nbfd > 0) && (i < FD_SETSIZE)) {
+            if(((sockcli = listeRemote_get_i_socket(clients_list, i)) > 0) && (FD_ISSET(sockcli, &pset))) {
+                if ( (nrcv= read ( sockfd, message, sizeof(message)-1) ) < 0 )  {
+                    perror ("servmulti : : readn error on socket");
+                    exit (1);
+                }
+                message[nrcv]='\0';
+                if(apdu(gen, message, response) == 0) {
+                    close(sockcli);
+                    //tab_clients[i] = -1;
+                    FD_CLR(sockcli, &rset);
+                } else {
+                    if ( (nsnd = write (sockcli, response, nrcv) ) < 0 ) {
+                        printf ("servmulti : writen error on socket");
+                        exit (1);
+                    }
+                }
+                nbfd--;
+            }
+            i++;
+        }
     }
     listeRemote_dest(clients_list);
     close(sockfd);
@@ -103,16 +130,16 @@ int main(int argc, char* argv[]){
 
 void *thread_ping(void *arg){
 	(void) arg;
-	
+
 		/*****************************************************/
 
 	int serverSocket, n;
 	struct sockaddr_in  serv_addr;
 	char *data="PIN";
-	int ttl;  
-	
+	int ttl;
 
-	
+
+
 
 
 	memset( (char *) &serv_addr,0, sizeof(serv_addr) );
@@ -147,12 +174,12 @@ void *thread_ping(void *arg){
 	}
 
 
-	
+
 }
 
 
 
-int adpu(Generator* gen, char* message, char* reponse){
+int apdu(Generator* gen, char* message, char* reponse){
 	int res=1;
 	if(!strncmp(message,"CNX",3)){
 		//ajouter le client dans la liste
