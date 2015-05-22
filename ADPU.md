@@ -21,6 +21,7 @@ Le serveur répondra avec NBR suivie du nombre en question.
 - Proposition d'une solution
 Pour envoyer ca solution le client enverra RES suivi du nombre et de la solution.
 S'il n'y a pas de solution pour le nombre, alors le champ solution sera un #
+Le serveur répondra avec un ROK ou RKO si le nombre n'est pas autorisé
 
 ## Gestion de la vie des clients
 

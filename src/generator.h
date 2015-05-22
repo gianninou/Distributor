@@ -18,7 +18,7 @@ Generator* newGenerator();
 void deleteGenerator(Generator* gen);
 
 int getNumber(Generator* gen);
-void setResult(Generator* gen, int number, char* result);
+int setResult(Generator* gen, int number, char* result);
 
 /* Si generation de mot au lieu de chiffre, pour plus tard*/
 /*char* getString(Generator* gen);*/

@@ -28,10 +28,11 @@ int getNumber(Generator* gen){
 	return gen->number;
 }
 
-void setResult(Generator* gen, int number, char* result){
+int setResult(Generator* gen, int number, char* result){
 	/*TODO ameliorer le malloc*/
+	int res=0;
 	Elem* elem = liste_get(gen->runningList,number);
-	if (elem){
+	if (elem && result[0]=='#'){
 		printf("Acceptation de %d : %s\n",number, result );
 		liste_supprime(gen->runningList,elem);
 		char* str = (char*)xmalloc(sizeof(char)*(strlen(result)+100));
@@ -39,9 +40,11 @@ void setResult(Generator* gen, int number, char* result){
 		fputs(str,gen->output);
 		free(str);
 		liste_add_last(gen->results,number,result);	
+		res=1;
 	}else{
 		printf("Pas de calcul en attente sur %d\n", number);
 	}
+	return res;
 }
 
 void showGenerator(Generator* gen){

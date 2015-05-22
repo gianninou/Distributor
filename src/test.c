@@ -24,7 +24,7 @@ void testCliExt(){
 
 void testGen(){
 	Generator* gen = newGenerator();
-	printf("Génération de %d\n", getNumber(gen));
+	/*printf("Génération de %d\n", getNumber(gen));
 	showGenerator(gen);
 	printf("Génération de %d\n", getNumber(gen));
 	showGenerator(gen);
@@ -48,7 +48,7 @@ void testGen(){
 	showGenerator(gen);
 	setResult(gen, 18, "tutu");
 	showGenerator(gen);
-	printf("Génération de %d\n", getNumber(gen));
+	printf("Génération de %d\n", getNumber(gen));*/
 
 	showGenerator(gen);
 }

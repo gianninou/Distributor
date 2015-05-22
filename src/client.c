@@ -7,7 +7,6 @@ void *thread_ping(void *arg){
     /* Pour enlever le warning */
 	/*(void) arg;*/
 	DATA* d = (DATA*)arg; 
-	printf("thread -> socket : %d\n",d->socket );
 
 	int socketServeur;
 
@@ -165,13 +164,10 @@ int main(int argc, char* argv[]){
 	/*  Création du socket */
 	/***********************/
 	 for (rp = result; rp != NULL; rp = rp->ai_next) {
-	 	printf("a\n");
         serverSocket = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
 		if (serverSocket==-1){
-			printf("sock : %d\n",serverSocket );
 			continue;
 		}
-		printf("sock : %d\n",serverSocket );
 		error = connect (serverSocket, rp->ai_addr, rp->ai_addrlen );
 		if(error !=-1 ){
 			break;
@@ -215,8 +211,6 @@ int main(int argc, char* argv[]){
 	/* s'enregistrer sur le serveur, récuperer son ID */
 	/* CNX */
 	w=write(serverSocket,"CNX",3);
-	printf("toto\n");
-	printf("w : %d\n",w );
 	if(w==-1){
 		perror("Erreur ecriture");
 		exit(1);

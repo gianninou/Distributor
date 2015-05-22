@@ -9,10 +9,12 @@ int main(int argc, char* argv[]){
      printf("Lancement du serveur ...\n");
 
 
-        /* INITIALISATION */
-        /* liste de client, Generator, sockets, listen, bind, ... */
+    /* INITIALISATION */
+    /* liste de client, Generator, sockets, listen, bind, ... */
 
+    char* reponse = (char*)xmalloc(sizeof(char)*BUFF_LEN);
     ListRemoteClient* clients_list = listeRemote_init();
+    Generator* gen = newGenerator();
 
     int sockfd;//, nbfd, newsockfd;
     struct sockaddr_in  serv_addr, cli_addr;
@@ -73,7 +75,7 @@ int main(int argc, char* argv[]){
 
         if(FD_ISSET(sockfd, &pset)) {
             clilen = sizeof(cli_addr);
-            //newsockfd =
+            //newsockfd = 
             accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
             RemoteClient* rm = newRemoteClient(cli_addr);
             if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
@@ -87,7 +89,40 @@ int main(int argc, char* argv[]){
     close(sockfd);
     /* creer un thread pour PING les clients avec gestion des pertes de connexion*/
 
-        /* Si client déjà enregistré, alors repondre à ces demandes */
+    /* Si client déjà enregistré, alors repondre à ces demandes */
 
-     return 0;
+    return 0;
+}
+
+
+int apdu(Generator* gen, char* message, char* reponse){
+	int res=1;
+	if(!strncmp(message,"CNX",3)){
+		//ajouter le client dans la liste
+		sprintf(reponse,"COK");
+	}else if(!strncmp(message,"GEN",3)){
+		//generer un nombre
+		int nb=getNumber(gen);
+		sprintf(reponse,"NBR %d",nb);
+	}else if(!strncmp(message,"RES",3)){
+		//enregistrer la reponse
+		int number=0;
+		char* result=(char*)xmalloc(sizeof(char)*strlen(message));
+		sscanf(&message[4],"%d:%s",&number,result);
+		free(result);
+		if(setResult(gen, number, result)){
+			sprintf(reponse,"ROK");
+		}else{
+			sprintf(reponse,"RKO");
+		}
+	}else if(!strncmp(message,"PON",3)){
+		//mettre à jour le timestamp
+	}else if(!strncmp(message,"DNX",3)){
+		//supprimer le client
+		sprintf(reponse,"DOK");
+	}else{
+		printf("Erreur message client reçu : |%s|\n",message );
+		res=0;
+	}
+	return res;
 }
