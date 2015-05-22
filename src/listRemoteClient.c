@@ -87,12 +87,13 @@ int listeRemote_suppr_i_socket(ListRemoteClient* l, int i){
 			}
 		}
 	}else{
-		return -1;
+		return 0;
 	}
 	if(found) {
 		listeRemote_supprime(l, e1);
+		return 1;
 	} else {
-		return -1;
+		return 0;
 	}
 }
 
