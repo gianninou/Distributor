@@ -24,15 +24,15 @@ CLIENT = Client
 #definition de la cible a reconstruire
 all : directories client server test
 
-client : $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
+client : directories $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o
 	$(CC)  $(DEST)client.o $(DEST)clientExec.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o -o $(DEST)$(CLIENT) $(LIB)
 
 
-server : $(DEST)server.o $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
+server : directories $(DEST)server.o $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
 	$(CC)  $(DEST)server.o $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(SERVER) $(LIB) 
 
 
-test : $(DEST)test.o  $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
+test : directories $(DEST)test.o  $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o
 	$(CC) $(DEST)test.o  $(DEST)remoteClient.o $(DEST)utils.o $(DEST)generator.o $(DEST)customlinkedlist.o $(DEST)listRemoteClient.o -o $(DEST)$(TEST) $(LIB)
 
 

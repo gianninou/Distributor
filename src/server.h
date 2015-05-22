@@ -4,15 +4,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
+
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <strings.h>
+#include <string.h>
+#include <netdb.h>
+#include <errno.h>
+
 
 #include "generator.h"
 #include "utils.h"
 #include "listRemoteClient.h"
 #include "remoteClient.h"
 
+#define PORT_MULTICAST 10000
+#define GROUP_MULTICAST "239.13.37.92"
+
 #define MAX_CLIENTS 100
 #define BUFF_LEN 100
 
 int adpu(Generator* gen, char* message, char* reponse);
+void *thread_ping(void *arg);
 
 #endif

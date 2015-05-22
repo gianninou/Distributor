@@ -51,6 +51,7 @@ void *thread_ping(void *arg){
     /* Boucle d'attente des PING */
 	while(thread_continu){
 		len_r=sizeof(addr_r);
+		printf("attente ping\n");
 		cnt=recvfrom(socketServeur,buff,sizeof(buff),0,(struct sockaddr*)&addr_r,&len_r);
 		if(cnt<0){
 			perror("error");
