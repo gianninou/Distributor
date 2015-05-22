@@ -135,9 +135,8 @@ int main(int argc, char* argv[]){
 
 	int serverSocket;
 	struct addrinfo hints, *rp;
-	struct sockaddr_in6  serv_addr;
 
-	memset ( (char *) &hints, 0, sizeof(serv_addr) );
+	memset ( (char *) &hints, 0, sizeof(hints) );
 	/* Compatibilite IPv6 */
 
 	struct addrinfo *result;

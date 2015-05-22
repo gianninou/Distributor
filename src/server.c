@@ -18,12 +18,13 @@ int main(int argc, char* argv[]){
 	List* realocate = liste_init();
 
 	int sockfd, nbfd, newsockfd;
-	struct sockaddr_in  serv_addr, cli_addr;
+	struct sockaddr_in cli_addr;
+	struct addrinfo hints, *rp;
     //int tab_fd[FD_SETSIZE];
 	fd_set rset, pset;
 	socklen_t clilen;
 
-	int maxfdp1, sockcli, i, nrcv, nsnd;
+	int maxfdp1, sockcli, i, nrcv, nsnd, s;
 
     /* Verifier le nombre de paramètre en entrée */
 	if (argc != 2){
@@ -34,32 +35,64 @@ int main(int argc, char* argv[]){
     /*
     * Ouvrir une socket (a TCP socket)
     */
-    if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) <0) {
+    /*if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) <0) {
     	perror("servmulti : Problème socket\n");
     	exit(2);
-    }
+    }*/
 
-    int optval = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+    
 
     /*
     * Lier l'adresse locale�à la socket
     */
-    memset( (char*) &serv_addr,0, sizeof(serv_addr) );
+    struct addrinfo *result;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+	hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
+	hints.ai_flags = 0;
+	hints.ai_protocol = 0;
+
+	s = getaddrinfo(NULL, argv[1], &hints, &result);
+	if (s != 0) {
+		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+		exit(EXIT_FAILURE);
+	}
+
+	/***********************/
+	/*  Création du socket */
+	/***********************/
+	 for (rp = result; rp != NULL; rp = rp->ai_next) {
+        sockfd = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
+		if (sockfd!=-1){
+			if (bind(sockfd, rp->ai_addr, rp->ai_addrlen ) <0) {
+		    	perror ("servmulti : erreur bind\n");
+		    	exit (1);
+		    }
+			break;
+		}
+	}
+	int optval = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+	
+	if (sockfd <0) {
+		perror ("erreur socket");
+		exit (1);
+	}
+	if(rp==NULL){
+		printf("ERROR\n");
+		exit(1);
+	}
+
+    /*memset( (char*) &serv_addr,0, sizeof(serv_addr) );
     serv_addr.sin_family = PF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(atoi(argv[1]));
+    serv_addr.sin_port = htons(atoi(argv[1]));*/
 
-    if (bind(sockfd,(struct sockaddr *)&serv_addr, sizeof(serv_addr) ) <0) {
-    	perror ("servmulti : erreur bind\n");
-    	exit (1);
-    }
     /* Paramétrer le nombre de connexion "pending" */
     if (listen(sockfd, SOMAXCONN) <0) {
     	perror ("servmulti : erreur listen\n");
     	exit (1);
     }
-
     maxfdp1 = sockfd + 1;
     FD_ZERO(&rset);
     FD_ZERO(&pset);
@@ -71,7 +104,6 @@ int main(int argc, char* argv[]){
     	perror("pthread_create");
     	return EXIT_FAILURE;
     }
-
 
     /* boucle attente client */
 
@@ -97,7 +129,6 @@ int main(int argc, char* argv[]){
     	i = 0;
     	char message[BUFF_LEN];
     	while((nbfd > 0) && (i <FD_SETSIZE)) {
-        	
     		if((FD_ISSET(i, &pset))) {
     			sockcli = listeRemote_get_i_socket(clients_list, i);
     			if(sockcli>0){
@@ -108,7 +139,7 @@ int main(int argc, char* argv[]){
 	    			}
 	    			memset(response, 0, BUFF_LEN);
 	    			message[nrcv]='\0';
-	    			printf("reçoit : |%s|\n",message );
+	    			//printf("reçoit : |%s|\n",message );
 	    			int res=apdu(gen, realocate, message, response);
 	    			if( res== 0) {
 	    				close(sockcli);
@@ -126,6 +157,7 @@ int main(int argc, char* argv[]){
     		}
     		i++;
     	}
+    	printf("fin\n");
     	i = 0;
     }
     listeRemote_dest(clients_list);

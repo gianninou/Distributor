@@ -14,7 +14,9 @@ void listeRemote_print(ListRemoteClient* l){
 	if(l->size!=0){
 		ElemRemoteClient* e1 = l->tete;
 		while(e1){
+			printf("avant\n");
 			printRemoteClient(e1->remoteClient);
+			printf("apres\n");
 			e1 = e1->suivant;
 		}
 	}else{
