@@ -23,7 +23,7 @@ RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
 		rc->timestamp_last_pong_sent = -1;
 		rc->dialog_socket = dialog_socket;
 	} else {
-		printf("Erreur getnameinfo : %s\n", gai_strerror(err));
+		//printf("Erreur getnameinfo : %s\n", gai_strerror(err));
 	}
 	return rc;
 }
