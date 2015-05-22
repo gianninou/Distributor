@@ -233,7 +233,7 @@ int main(int argc, char* argv[]){
 	while(continu){
 
 		/* on envoie un GET */
-		w=write(serverSocket,"GET\n",4);
+		w=write(serverSocket,"GEN\n",4);
 		if(w==-1){
 			perror("Erreur ecriture");
 			exit(1);
@@ -251,6 +251,7 @@ int main(int argc, char* argv[]){
 		if(!strncmp(buff,"NBR",3)){
 			/* .... CALCUL du cli ext */
 			int i = atoi(buff+3);
+			printf("BUFF : %s\n",buff );
 			char* res = execClientExec(cli,i);
 			/* On récupere le resultat du cli ext, on l'envoie au serveur (et on s'assure de la bonne reception en option) */
 			if(res){
@@ -258,12 +259,15 @@ int main(int argc, char* argv[]){
 			}else{
 				sprintf(buff,"RES %d:#\n",i);
 			}
+			printf("write : %s\n",buff );
 			w=write(serverSocket,buff,strlen(buff));
 			if(w==-1){
 				perror("Erreur ecriture");
 				exit(1);
 			}
 			
+		}else if(!strncmp(buff,"ROK",3)){
+			printf("OKKKKKK\n" );
 		}else{
 			/* Erreur retour GET */
 			/* Attendre un certain temps */
@@ -276,7 +280,7 @@ int main(int argc, char* argv[]){
 	}
 
 	/* DCX */
-	w=write(serverSocket,"DCX",3);
+	w=write(serverSocket,"DNX",3);
 	if(w==-1){
 		perror("Erreur ecriture");
 		exit(1);
