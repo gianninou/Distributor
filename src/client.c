@@ -166,15 +166,14 @@ int main(int argc, char* argv[]){
 	/***********************/
 	 for (rp = result; rp != NULL; rp = rp->ai_next) {
         serverSocket = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
-		if (serverSocket==-1){
-			continue;
-		}
-		error = connect (serverSocket, rp->ai_addr, rp->ai_addrlen );
-		if(error !=-1 ){
-			break;
-		}else{
-			perror ("erreur connect");
-			exit (1);
+		if (serverSocket!=-1){
+			error = connect (serverSocket, rp->ai_addr, rp->ai_addrlen );
+			if(error ==-1 ){
+				perror ("erreur connect");
+				exit (1);
+			}else{
+				break;
+			}
 		}
 	}
 	

@@ -13,7 +13,7 @@ void liste_view(List* l){
 	if(l->size!=0){
 		Elem* e1 = l->tete;
 		while(e1){
-			printf("elem %d : %s\n",e1->number,e1->res );
+			printf("\telem %d : %s\n",e1->number,e1->res );
 			e1 = e1->suivant;
 		}
 	}

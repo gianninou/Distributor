@@ -32,7 +32,7 @@ int setResult(Generator* gen, int number, char* result){
 	/*TODO ameliorer le malloc*/
 	int res=0;
 	Elem* elem = liste_get(gen->runningList,number);
-	if (elem && result[0]=='#'){
+	if (elem && result[0]!='#'){
 		printf("Acceptation de %d : %s\n",number, result );
 		liste_supprime(gen->runningList,elem);
 		char* str = (char*)xmalloc(sizeof(char)*(strlen(result)+100));

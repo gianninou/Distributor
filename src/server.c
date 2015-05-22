@@ -104,23 +104,15 @@ int main(int argc, char* argv[]){
 void *thread_ping(void *arg){
 	(void) arg;
 	
-		/*****************************************************/
-
 	int serverSocket, n;
 	struct sockaddr_in  serv_addr;
 	char *data="PIN";
 	int ttl;  
 	
-
-	
-
-
 	memset( (char *) &serv_addr,0, sizeof(serv_addr) );
 	serv_addr.sin_family = PF_INET;
 	serv_addr.sin_addr.s_addr = inet_addr(GROUP_MULTICAST);
 	serv_addr.sin_port = htons(PORT_MULTICAST);
-
-
 
 	if ((serverSocket = socket(PF_INET, SOCK_DGRAM, 0)) <0) {
 		perror ("erreur socket thread");
@@ -133,8 +125,6 @@ void *thread_ping(void *arg){
 		exit (1);
 	}
 
-
-
 	while(1){
 		n= sendto (serverSocket, data, strlen(data),0, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 		if (n != strlen(data)){
@@ -145,9 +135,6 @@ void *thread_ping(void *arg){
 			sleep(1);
 		}
 	}
-
-
-	
 }
 
 
