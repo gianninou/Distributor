@@ -27,10 +27,10 @@ void deleteClienExec(ClientExec* cli){
 char* execClientExec(ClientExec* cli, int nb){
 	char* result = (char*)malloc(sizeof(char)*MAX_LENGTH);
 	memset(result,0,MAX_LENGTH);
-
+	pid_t pid;
 	int fd[2];
 	pipe(fd);
-	if(!fork()){
+	if(!(pid=fork())){
 		/* fils */
 		close(fd[0]);
 		dup2(fd[1],1);
@@ -42,8 +42,8 @@ char* execClientExec(ClientExec* cli, int nb){
 	close(fd[1]);
 
 	/* TODO check return */
-	int pid;
-	wait(&pid);
+	sleep(1);
+	waitpid(pid,NULL,0);
 
 	int r = read(fd[0],result,MAX_LENGTH-1);
 	/*printf("RESULTAT %d %d : '%s'\n", nb, r, result);*/

@@ -122,11 +122,13 @@ int listeRemote_get_i_socket(ListRemoteClient* l, int i){
 	if(l->size!=0){
 		e1 = l->tete;
 		while(e1 && !found){
+			printf("@");
 			found = e1->remoteClient->dialog_socket == i;
 			if(!found) {
 				e1 = e1->suivant;
 			}
 		}
+		printf("\n");
 	}else{
 		return -1;
 	}

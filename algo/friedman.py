@@ -24,7 +24,7 @@ def friedman(nb) :
             0
     A={i:e for i in range(nb,nb+1)for x in permutations(`i`)for e in s("".join(x))[x>='1':]if E(e)==i}
     for v in A:
-        res += "{}:{}".format(v,A[v])
+        res += "{}".format(A[v])
     return res
 
 print >> sys.stderr, 'FRIEDMANN CALCULATOR : ' + sys.argv[1]

@@ -78,8 +78,9 @@ int main(int argc, char* argv[]){
     	pset = rset;
 
         nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
-
+        
         if(FD_ISSET(sockfd, &pset)) {
+        	printf("*****************************************************************************\n");
             clilen = sizeof(cli_addr);
             newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
             RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
@@ -87,7 +88,7 @@ int main(int argc, char* argv[]){
                 listeRemote_add_last(clients_list,rm);
                 FD_SET(newsockfd, &rset);
                 if(newsockfd >= maxfdp1) {
-                    maxfdp1 = newsockfd + 1;
+                    maxfdp1++;
                 }
                 nbfd--;
             }
@@ -98,24 +99,29 @@ int main(int argc, char* argv[]){
         i = 3;
         char message[BUFF_LEN];
         while((nbfd > 0) && (i < FD_SETSIZE)) {
+        	printf("êêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêê\n");
+        	//sleep(1);
             if(((sockcli = listeRemote_get_i_socket(clients_list, i)) > 0) && (FD_ISSET(sockcli, &pset))) {
+                printf("SOCKCLI : %d\n",sockcli );
                 if ( (nrcv= read ( sockcli, message, sizeof(message)-1) ) < 0 )  {
                     perror ("servmulti : : readn error on socket");
                     exit (1);
                 }
                 memset(response, 0, BUFF_LEN);
                 message[nrcv]='\0';
-                if(apdu(gen, message, response) == 0) {
+                printf("SEND TO APDU : |%s|\n",message);
+                int res=apdu(gen, message, response);
+                if( res== 0) {
                     close(sockcli);
                     //tab_clients[i] = -1;
                     FD_CLR(sockcli, &rset);
-                } else {
+                } else if(res==1){
                     if ( (nsnd = write (sockcli, response, strlen(response)) ) < 0 ) {
                         printf ("servmulti : writen error on socket");
                         exit (1);
                     }
                 }
-                showGenerator(gen);
+                //showGenerator(gen);
                 nbfd--;
             }
             i++;
@@ -176,18 +182,27 @@ int apdu(Generator* gen, char* message, char* reponse){
 		//generer un nombre
 		int nb=getNumber(gen);
 		sprintf(reponse,"NBR %d",nb);
-        printf("reponse : %s", reponse);
+        printf("reponse : |%s|\n", reponse);
 	}else if(!strncmp(message,"RES",3)){
 		//enregistrer la reponse
 		int number=0;
 		char* result=(char*)xmalloc(sizeof(char)*strlen(message));
-		sscanf(&message[4],"%d:%s",&number,result);
-		free(result);
+
+		const char s[2] = ":";
+		char *token;
+		token = strtok(&message[3], s);
+		number = atoi(token);
+		token = strtok(NULL, s);
+		strcpy(result,token);
+
+		printf("*****number : |%d|:|%s|\n",number,result );
 		if(setResult(gen, number, result)){
-			sprintf(reponse,"ROK");
+			//sprintf(reponse,"ROK");
 		}else{
-			sprintf(reponse,"RKO");
+			//sprintf(reponse,"RKO");
 		}
+		free(result);
+		res=2;
 	}else if(!strncmp(message,"PON",3)){
 		//mettre à jour le timestamp
 	}else if(!strncmp(message,"DNX",3)){

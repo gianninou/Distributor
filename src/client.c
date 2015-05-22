@@ -97,7 +97,7 @@ int main(int argc, char* argv[]){
 	int r,w,s;
 	char buff[MAX_LENGTH];
 
-	int numb=10;
+	int numb=30;
 	int verbose_flag=0;
 
 	/* Creation du thread pour les PING */
@@ -233,13 +233,15 @@ int main(int argc, char* argv[]){
 	while(continu){
 
 		/* on envoie un GET */
-		w=write(serverSocket,"GEN\n",4);
+		w=write(serverSocket,"GEN",3);
 		if(w==-1){
 			perror("Erreur ecriture");
 			exit(1);
 		}
+		sleep(1);
 
 		/* On recupere le nombre du serveur */
+		memset(buff,0,MAX_LENGTH);
 		r=read(serverSocket,buff,MAX_LENGTH-1);
 		if(r==-1){
 			perror("Erreur read");
@@ -254,27 +256,28 @@ int main(int argc, char* argv[]){
 			printf("BUFF : %s\n",buff );
 			char* res = execClientExec(cli,i);
 			/* On récupere le resultat du cli ext, on l'envoie au serveur (et on s'assure de la bonne reception en option) */
+			memset(buff,0,MAX_LENGTH);
 			if(res){
-				sprintf(buff,"RES %d:%s\n", i, res);
+				sprintf(buff,"RES %d:%s", i, res);
 			}else{
-				sprintf(buff,"RES %d:#\n",i);
+				sprintf(buff,"RES %d:#",i);
 			}
-			printf("write : %s\n",buff );
+			printf("write : |%s|\n",buff );
 			w=write(serverSocket,buff,strlen(buff));
 			if(w==-1){
 				perror("Erreur ecriture");
 				exit(1);
 			}
-			
+			numb--;
 		}else if(!strncmp(buff,"ROK",3)){
-			printf("OKKKKKK\n" );
+			//printf("OKKKKKK\n" );
 		}else{
 			/* Erreur retour GET */
 			/* Attendre un certain temps */
 			printf("ERREUR GET : |%s|\n",buff );
 		}
 
-		if(!--numb){
+		if(!numb){
 			continu=0;
 		}
 	}
