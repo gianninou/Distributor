@@ -1,7 +1,7 @@
 #include "remoteClient.h"
 
 RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
-	static int current_id = 0;
+	static int current_id = 1;
 	RemoteClient* rc = NULL;
 
 	char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];

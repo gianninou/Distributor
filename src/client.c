@@ -238,7 +238,6 @@ int main(int argc, char* argv[]){
 			perror("Erreur ecriture");
 			exit(1);
 		}
-		sleep(1);
 
 		/* On recupere le nombre du serveur */
 		memset(buff,0,MAX_LENGTH);
@@ -253,7 +252,6 @@ int main(int argc, char* argv[]){
 		if(!strncmp(buff,"NBR",3)){
 			/* .... CALCUL du cli ext */
 			int i = atoi(buff+3);
-			printf("BUFF : %s\n",buff );
 			char* res = execClientExec(cli,i);
 			/* On récupere le resultat du cli ext, on l'envoie au serveur (et on s'assure de la bonne reception en option) */
 			memset(buff,0,MAX_LENGTH);
@@ -262,7 +260,6 @@ int main(int argc, char* argv[]){
 			}else{
 				sprintf(buff,"RES %d:#",i);
 			}
-			printf("write : |%s|\n",buff );
 			w=write(serverSocket,buff,strlen(buff));
 			if(w==-1){
 				perror("Erreur ecriture");

@@ -75,18 +75,9 @@ int main(int argc, char* argv[]){
     /* boucle attente client */
 
     for(;;) {
-    	/*for(i=0;i<FD_SETSIZE;i++){
-    		if(FD_ISSET(i,&rset)){
-    			FD_SET(i,&pset);
-    		}else{
-    			FD_CLR(i,&pset);
-    		}
-    	}*/
     	pset=rset;
-
     	nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
     	if(FD_ISSET(sockfd, &pset)) {
-    		printf("*****************************************************************************\n");
     		clilen = sizeof(cli_addr);
     		newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
     		RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
@@ -104,8 +95,6 @@ int main(int argc, char* argv[]){
     	i = 0;
     	char message[BUFF_LEN];
     	while((nbfd > 0) && (i <FD_SETSIZE)) {
-        	//printf("êêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêê\n");
-        	//sleep(1);
         	
     		if((FD_ISSET(i, &pset))) {
     			sockcli = listeRemote_get_i_socket(clients_list, i);
