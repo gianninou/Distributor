@@ -104,6 +104,9 @@ int main(int argc, char* argv[]){
 	    				perror ("servmulti : : readn error on socket");
 	    				exit (1);
 	    			}
+	    			if(nrcv==0){
+	    				printf("Le client est parti\n");
+	    			}
 	    			memset(response, 0, BUFF_LEN);
 	    			message[nrcv]='\0';
 	    			int res=apdu(gen, message, response);
@@ -201,11 +204,12 @@ int apdu(Generator* gen, char* message, char* reponse){
 		res=2;
 	}else if(!strncmp(message,"PON",3)){
 		//mettre à jour le timestamp
-		printf("PON\n");
 		res=2;
 	}else if(!strncmp(message,"DNX",3)){
 		//supprimer le client
 		sprintf(reponse,"DOK");
+	}else if(strlen(reponse)==0){
+		printf("Un client à quitté inopinément\n");
 	}else{
 		printf("Erreur message client reçu : |%s|\n",message );
 		res=0;

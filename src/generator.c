@@ -34,7 +34,7 @@ int setResult(Generator* gen, int number, char* result){
 	Elem* elem = liste_get(gen->runningList,number);
 	if (elem){
 		if(result[0]!='#'){
-			printf("Acceptation de |%d : %s|\n",number, result );
+			printf("Solution pour %d : %s\n",number, result );
 			liste_supprime(gen->runningList,elem);
 			char* str = (char*)xmalloc(sizeof(char)*(strlen(result)+100));
 			sprintf(str,"%d : %s\n",number,result);
@@ -43,7 +43,7 @@ int setResult(Generator* gen, int number, char* result){
 			free(str);
 			liste_add_last(gen->results,number,result);	
 		}else{
-			printf("pas de solution pour %d\n",number );
+			printf("Pas de solution pour %d\n",number );
 		}
 		res=1;
 	}else{

@@ -60,6 +60,7 @@ void *thread_ping(void *arg){
 
 		if(!strncmp(buff,"PIN",3)){
 			lock();
+			sleep(1);
 			int w=write(d->socket,"PON",3);
 			unlock();
 			sleep(1);
@@ -90,7 +91,7 @@ int main(int argc, char* argv[]){
 	int r,w,s;
 	char buff[MAX_LENGTH];
 
-	int numb=30;
+	int numb=5;
 	int verbose_flag=0;
 
 	/* Creation du thread pour les PING */
@@ -147,7 +148,7 @@ int main(int argc, char* argv[]){
 	hints.ai_flags = 0;
 	hints.ai_protocol = 0;
 
-	s = getaddrinfo(argv[1], argv[2], &hints, &result);
+	s = getaddrinfo(argv[optind], argv[optind+1], &hints, &result);
 	if (s != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
 		exit(EXIT_FAILURE);
@@ -266,7 +267,9 @@ int main(int argc, char* argv[]){
 				perror("Erreur ecriture");
 				exit(1);
 			}
-			numb--;
+			if(numb>0){
+				numb--;
+			}
 		}else if(!strncmp(buff,"ROK",3)){
 			//printf("OKKKKKK\n" );
 		}else{
@@ -274,7 +277,7 @@ int main(int argc, char* argv[]){
 			/* Attendre un certain temps */
 			printf("ERREUR GET : |%s|\n",buff );
 		}
-		if(!numb){
+		if(numb==0){
 			continu=0;
 		}
 	}
@@ -310,7 +313,6 @@ int main(int argc, char* argv[]){
 
 void lock(){
 	int err = pthread_mutex_lock(&mutex);
-	sleep(1);
 	if(err){
 		perror("erreur lock");
 	}
