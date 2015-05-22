@@ -27,6 +27,7 @@ void deleteClienExec(ClientExec* cli){
 char* execClientExec(ClientExec* cli, int nb){
 	char* result = (char*)malloc(sizeof(char)*MAX_LENGTH);
 	memset(result,0,MAX_LENGTH);
+	memset(result,0,MAX_LENGTH);
 	pid_t pid;
 	int fd[2];
 	pipe(fd);

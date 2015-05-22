@@ -27,4 +27,7 @@ typedef struct{
 	int socket;
 }DATA;
 
+void lock();
+void unlock();
+
 #endif

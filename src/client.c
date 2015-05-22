@@ -2,6 +2,7 @@
 
 
 static int thread_continu;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *thread_ping(void *arg){
     /* Pour enlever le warning */
@@ -51,7 +52,6 @@ void *thread_ping(void *arg){
     /* Boucle d'attente des PING */
 	while(thread_continu){
 		len_r=sizeof(addr_r);
-		printf("attente ping\n");
 		cnt=recvfrom(socketServeur,buff,sizeof(buff),0,(struct sockaddr*)&addr_r,&len_r);
 		if(cnt<0){
 			perror("error");
@@ -59,21 +59,14 @@ void *thread_ping(void *arg){
 		}
 
 		if(!strncmp(buff,"PIN",3)){
+			lock();
 			int w=write(d->socket,"PON",3);
+			unlock();
+			sleep(1);
 			if(w==-1){
 				perror("Erreur ecriture");
 				exit(1);
 			}
-
-			/* VERSION UDP */
-			/*
-			printf("PING recu\n");
-			sprintf(buff,"PON");
-			cnt=sendto(socketServeur,buff,strlen(buff),0,(struct sockaddr*)&addr_r,len_r);
-			if(cnt!=strlen(buff)){
-				printf("erreur thread sendto\n");
-			}
-			*/
 		}else{
 			printf("ERREUR thread recu : %s\n",buff );
 		}
@@ -196,21 +189,12 @@ int main(int argc, char* argv[]){
 
 
 
-	/***********************/
-	/* Lancement du thread */
-	/***********************/
 	
-	data = (DATA*)xmalloc(sizeof(DATA)*1);
-	data->socket=serverSocket;
-
-	if(pthread_create(&thread, NULL, thread_ping, data) == -1) {
-		perror("pthread_create");
-		return EXIT_FAILURE;
-	} 
-
 	/* s'enregistrer sur le serveur, récuperer son ID */
 	/* CNX */
+	lock();
 	w=write(serverSocket,"CNX",3);
+	unlock();
 	if(w==-1){
 		perror("Erreur ecriture");
 		exit(1);
@@ -229,16 +213,31 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
+	/***********************/
+	/* Lancement du thread */
+	/***********************/
+	
+	//pthread_mutex_init ( &mutex, NULL);
+	
+	data = (DATA*)xmalloc(sizeof(DATA)*1);
+	data->socket=serverSocket;
+
+	if(pthread_create(&thread, NULL, thread_ping, data) == -1) {
+		perror("pthread_create");
+		return EXIT_FAILURE;
+	} 
+
+
 	/* debut de boucle sur le programme externe */
 	while(continu){
-
 		/* on envoie un GET */
+		lock();
 		w=write(serverSocket,"GEN",3);
+		unlock();
 		if(w==-1){
 			perror("Erreur ecriture");
 			exit(1);
 		}
-
 		/* On recupere le nombre du serveur */
 		memset(buff,0,MAX_LENGTH);
 		r=read(serverSocket,buff,MAX_LENGTH-1);
@@ -247,7 +246,6 @@ int main(int argc, char* argv[]){
 			exit(1);
 		}
 		buff[r]='\0';
-
 
 		if(!strncmp(buff,"NBR",3)){
 			/* .... CALCUL du cli ext */
@@ -260,7 +258,10 @@ int main(int argc, char* argv[]){
 			}else{
 				sprintf(buff,"RES %d:#",i);
 			}
+			free(res);
+			lock();
 			w=write(serverSocket,buff,strlen(buff));
+			unlock();
 			if(w==-1){
 				perror("Erreur ecriture");
 				exit(1);
@@ -273,14 +274,14 @@ int main(int argc, char* argv[]){
 			/* Attendre un certain temps */
 			printf("ERREUR GET : |%s|\n",buff );
 		}
-
 		if(!numb){
 			continu=0;
 		}
 	}
-
 	/* DCX */
+	lock();
 	w=write(serverSocket,"DNX",3);
+	unlock();
 	if(w==-1){
 		perror("Erreur ecriture");
 		exit(1);
@@ -305,4 +306,19 @@ int main(int argc, char* argv[]){
 
 
 	return 0;
+}
+
+void lock(){
+	int err = pthread_mutex_lock(&mutex);
+	sleep(1);
+	if(err){
+		perror("erreur lock");
+	}
+}
+
+void unlock(){
+	int err = pthread_mutex_unlock(&mutex);
+	if(err){
+		perror("erreur lock");
+	}
 }

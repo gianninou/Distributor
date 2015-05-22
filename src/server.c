@@ -65,11 +65,11 @@ int main(int argc, char* argv[]){
     FD_SET(sockfd, &rset);
 
 
-    // /* Lancement du thread */
-    // if(pthread_create(&thread, NULL, thread_ping, NULL) == -1) {
-    // 	perror("pthread_create");
-    // 	return EXIT_FAILURE;
-    // }
+    /* Lancement du thread */
+    if(pthread_create(&thread, NULL, thread_ping, NULL) == -1) {
+    	perror("pthread_create");
+    	return EXIT_FAILURE;
+    }
 
 
     /* boucle attente client */
@@ -99,6 +99,7 @@ int main(int argc, char* argv[]){
     		if((FD_ISSET(i, &pset))) {
     			sockcli = listeRemote_get_i_socket(clients_list, i);
     			if(sockcli>0){
+    				memset(message, 0, BUFF_LEN);
 	    			if ( (nrcv= read ( sockcli, message, sizeof(message)-1) ) < 0 )  {
 	    				perror ("servmulti : : readn error on socket");
 	    				exit (1);
@@ -163,7 +164,7 @@ void *thread_ping(void *arg){
 			perror ("erreur sendto thread");
 			/*exit (1);*/
 		}else{
-			sleep(1);
+			sleep(5);
 		}
 	}
 }
@@ -200,6 +201,8 @@ int apdu(Generator* gen, char* message, char* reponse){
 		res=2;
 	}else if(!strncmp(message,"PON",3)){
 		//mettre à jour le timestamp
+		printf("PON\n");
+		res=2;
 	}else if(!strncmp(message,"DNX",3)){
 		//supprimer le client
 		sprintf(reponse,"DOK");
