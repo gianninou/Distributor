@@ -141,7 +141,7 @@ int listeRemote_get_size(ListRemoteClient* l) {
 	return l->size;
 }
 
-int listeRemote_get_i_socket(ListRemoteClient* l, int i){
+RemoteClient* listeRemote_get_i_socket(ListRemoteClient* l, int i){
 	int found=0;
 	ElemRemoteClient* e1 = (ElemRemoteClient*) NULL;
 	if(l->size!=0){
@@ -155,12 +155,12 @@ int listeRemote_get_i_socket(ListRemoteClient* l, int i){
 			}
 		}
 	}else{
-		return -1;
+		return NULL;
 	}
 	if(found) {
-		return e1->remoteClient->dialog_socket;
+		return e1->remoteClient;
 	} else {
-		return -1;
+		return NULL;
 	}
 }
 

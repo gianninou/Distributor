@@ -19,7 +19,7 @@ typedef struct remoteClient{
 	char data_to_send[BUFFERSIZE];
 	int timestamp_last_pong_sent;
 	int dialog_socket;
-
+	int number;
 }RemoteClient;
 
 RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket);

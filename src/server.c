@@ -64,6 +64,8 @@ int main(int argc, char* argv[]){
 	 for (rp = result; rp != NULL; rp = rp->ai_next) {
         sockfd = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
 		if (sockfd!=-1){
+			int optval = 1;
+    		setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
 			if (bind(sockfd, rp->ai_addr, rp->ai_addrlen ) <0) {
 		    	perror ("servmulti : erreur bind\n");
 		    	exit (1);
@@ -71,8 +73,7 @@ int main(int argc, char* argv[]){
 			break;
 		}
 	}
-	int optval = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+	
 	
 	if (sockfd <0) {
 		perror ("erreur socket");
@@ -108,49 +109,75 @@ int main(int argc, char* argv[]){
     /* boucle attente client */
 
     for(;;) {
+    	printf("1\n");
     	pset=rset;
     	nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
+    	printf("2\n");
     	if(FD_ISSET(sockfd, &pset)) {
+    		printf("3\n");
     		clilen = sizeof(cli_addr);
     		newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+    		printf("4\n");
     		RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
     		if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
+    			printf("5\n");
     			listeRemote_add_last(clients_list,rm);
+    			printf("6\n");
     			//printRemoteClient(rm);
     			FD_SET(newsockfd, &rset);
     			if(newsockfd >= maxfdp1) {
     				maxfdp1=newsockfd+1;
     			}
     			nbfd--;
+    			printf("7\n");
     		}
-    		listeRemote_print(clients_list);
+    		printf("8\n");
+    		//listeRemote_print(clients_list);
     	}
 
     	i = 0;
     	char message[BUFF_LEN];
     	while((nbfd > 0) && (i <FD_SETSIZE)) {
+    		printf("10\n");
     		if((FD_ISSET(i, &pset))) {
-    			sockcli = listeRemote_get_i_socket(clients_list, i);
+    			printf("11\n");
+    			RemoteClient* c = listeRemote_get_i_socket(clients_list, i);
+    			printf("12\n");
+    			sockcli = c->dialog_socket;
     			if(sockcli>0){
+    				printf("13\n");
     				memset(message, 0, BUFF_LEN);
 	    			if ( (nrcv= read ( sockcli, message, sizeof(message)-1) ) < 0 )  {
 	    				perror ("servmulti : : readn error on socket");
 	    				exit (1);
 	    			}
+	    			printf("14\n");
 	    			memset(response, 0, BUFF_LEN);
 	    			message[nrcv]='\0';
+	    			printf("15\n");
 	    			//printf("reçoit : |%s|\n",message );
-	    			int res=apdu(gen, realocate, message, response);
-	    			if(res== 0) {
-						listeRemote_suppr_i_socket(clients_list, i);
+	    			int res=apdu(gen, realocate,c, message, response);
+	    			printf("16\n");
+	    			if(res== 0 || res==3) {
+
+	    				if(res==3){
+	    					printf("17\n");
+	    					liste_add_last(realocate,c->number,NULL);
+	    					printf("18\n");
+	    				}
+	    				printf("19\n");
+						listeRemote_suppr_i_socket(clients_list, c->dialog_socket);
+						printf("20\n");
 	    				close(sockcli);
 	    				FD_CLR(sockcli, &rset);
-						listeRemote_print(clients_list);
+						//listeRemote_print(clients_list);
 	    			} else if(res==1){
+	    				printf("21\n");
 	    				if ( (nsnd = write (sockcli, response, strlen(response)) ) < 0 ) {
 	    					printf ("servmulti : writen error on socket");
 	    					exit (1);
 	    				}
+	    				printf("22\n");
 	    			}
 	                //showGenerator(gen);
 	    			nbfd--;
@@ -206,8 +233,9 @@ void *thread_ping(void *arg){
 
 
 
-int apdu(Generator* gen, List* liste, char* message, char* reponse){
+int apdu(Generator* gen, List* liste,RemoteClient* c, char* message, char* reponse){
 	int res=1;
+	printf("APDU : %s\n",message );
 	if(!strncmp(message,"CNX",3)){
 		//ajouter le client dans la liste
 		sprintf(reponse,"COK");
@@ -215,12 +243,22 @@ int apdu(Generator* gen, List* liste, char* message, char* reponse){
 		//generer un nombre
 		int nb;
 		if(liste->size>0){
-			Elem* e = liste_get(liste,0);
+			printf("A %d\n",liste->size);
+
+			Elem* e = liste->tete;
+			printf("B\n");
 			nb=e->number;
+			printf("C\n");
+			printf("REALOCATTE %d\n",nb );
+			printf("D\n");
 			liste_supprime(liste,e);
+			printf("E\n");
+			printf("c\n");
 		}else{
 			nb=getNumber(gen);
 		}
+		c->number=nb;
+		printf("NB : %d\n",nb );
 		sprintf(reponse,"NBR %d",nb);
 	}else if(!strncmp(message,"RES",3)){
 		//enregistrer la reponse
@@ -242,7 +280,7 @@ int apdu(Generator* gen, List* liste, char* message, char* reponse){
 		free(result);
 		res=2;
 	}else if(!strncmp(message,"PON",3)){
-		//mettre à jour le timestamp
+		c->timestamp_last_pong_sent=(unsigned)time(NULL);
 		res=2;
 	}else if(!strncmp(message,"DNX",3)){
 		//supprimer le client
@@ -250,8 +288,7 @@ int apdu(Generator* gen, List* liste, char* message, char* reponse){
 		res=0;
 	}else if(strlen(reponse)==0){
 		printf("Un client a quitté inopinément\n");
-
-		res=0;
+		res=3;
 	}else{
 		printf("Erreur message client reçu : |%s|\n",message );
 		res=0;

@@ -251,6 +251,8 @@ int main(int argc, char* argv[]){
 			/* .... CALCUL du cli ext */
 			int i = atoi(buff+3);
 			char* res = execClientExec(cli,i);
+			printf("la\n");
+			sleep(4);
 			/* On récupere le resultat du cli ext, on l'envoie au serveur (et on s'assure de la bonne reception en option) */
 			memset(buff,0,MAX_LENGTH);
 			if(res){
