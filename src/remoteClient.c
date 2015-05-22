@@ -5,11 +5,12 @@ RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
 	RemoteClient* rc = NULL;
 
 	char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
-	size_t size = sizeof dialog_socket;
+	size_t size = sizeof cli_addr;
 	socklen_t len = (socklen_t)size;
 
-	if (getnameinfo((struct sockaddr*) &cli_addr, len, hbuf, sizeof(hbuf), sbuf,
-	                sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
+	int err;
+	if ((err = getnameinfo((struct sockaddr*) &cli_addr, len, hbuf, sizeof(hbuf), sbuf,
+	                sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV)) == 0) {
 		rc = (RemoteClient*)xmalloc(sizeof(RemoteClient));
 		rc->id = current_id++;
 		rc->cli_addr = cli_addr;
@@ -18,6 +19,8 @@ RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
 		strcpy(rc->data_to_send, "NULL");
 		rc->timestamp_last_pong_sent = -1;
 		rc->dialog_socket = dialog_socket;
+	} else {
+		printf("%s\n", gai_strerror(err));
 	}
 	return rc;
 }

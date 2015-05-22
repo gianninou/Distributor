@@ -120,11 +120,12 @@ int listeRemote_get_i_socket(ListRemoteClient* l, int i){
 	int found;
 	ElemRemoteClient* e1 = (ElemRemoteClient*) NULL;
 	if(l->size!=0){
-		ElemRemoteClient* e1 = l->tete;
-		found = e1->remoteClient->dialog_socket == i;
+		e1 = l->tete;
 		while(e1 && !found){
-			e1 = e1->suivant;
 			found = e1->remoteClient->dialog_socket == i;
+			if(!found) {
+				e1 = e1->suivant;
+			}
 		}
 	}else{
 		return -1;

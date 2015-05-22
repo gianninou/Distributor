@@ -65,11 +65,11 @@ int main(int argc, char* argv[]){
     FD_SET(sockfd, &rset);
 
 
-    /* Lancement du thread */
-    if(pthread_create(&thread, NULL, thread_ping, NULL) == -1) {
-    	perror("pthread_create");
-    	return EXIT_FAILURE;
-    }
+    // /* Lancement du thread */
+    // if(pthread_create(&thread, NULL, thread_ping, NULL) == -1) {
+    // 	perror("pthread_create");
+    // 	return EXIT_FAILURE;
+    // }
 
 
     /* boucle attente client */
@@ -91,29 +91,31 @@ int main(int argc, char* argv[]){
                 }
                 nbfd--;
             }
+            listeRemote_print(clients_list);
         }
-        listeRemote_print(clients_list);
         printf("\n\n");
 
         i = 3;
         char message[BUFF_LEN];
         while((nbfd > 0) && (i < FD_SETSIZE)) {
             if(((sockcli = listeRemote_get_i_socket(clients_list, i)) > 0) && (FD_ISSET(sockcli, &pset))) {
-                if ( (nrcv= read ( sockfd, message, sizeof(message)-1) ) < 0 )  {
+                if ( (nrcv= read ( sockcli, message, sizeof(message)-1) ) < 0 )  {
                     perror ("servmulti : : readn error on socket");
                     exit (1);
                 }
+                memset(response, 0, BUFF_LEN);
                 message[nrcv]='\0';
                 if(apdu(gen, message, response) == 0) {
                     close(sockcli);
                     //tab_clients[i] = -1;
                     FD_CLR(sockcli, &rset);
                 } else {
-                    if ( (nsnd = write (sockcli, response, nrcv) ) < 0 ) {
+                    if ( (nsnd = write (sockcli, response, strlen(response)) ) < 0 ) {
                         printf ("servmulti : writen error on socket");
                         exit (1);
                     }
                 }
+                showGenerator(gen);
                 nbfd--;
             }
             i++;
@@ -130,11 +132,11 @@ int main(int argc, char* argv[]){
 
 void *thread_ping(void *arg){
 	(void) arg;
-	
+
 	int serverSocket, n;
 	struct sockaddr_in  serv_addr;
 	char *data="PIN";
-	int ttl;  
+	int ttl;
 
 	memset( (char *) &serv_addr,0, sizeof(serv_addr) );
 	serv_addr.sin_family = PF_INET;
@@ -158,7 +160,6 @@ void *thread_ping(void *arg){
 			perror ("erreur sendto thread");
 			/*exit (1);*/
 		}else{
-			printf("PINGGGG\n");
 			sleep(1);
 		}
 	}
@@ -175,6 +176,7 @@ int apdu(Generator* gen, char* message, char* reponse){
 		//generer un nombre
 		int nb=getNumber(gen);
 		sprintf(reponse,"NBR %d",nb);
+        printf("reponse : %s", reponse);
 	}else if(!strncmp(message,"RES",3)){
 		//enregistrer la reponse
 		int number=0;
