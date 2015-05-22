@@ -73,6 +73,30 @@ ElemRemoteClient* listeRemote_suivant(ListRemoteClient* l, ElemRemoteClient* el)
 	return el->suivant;
 }
 
+int listeRemote_suppr_i_socket(ListRemoteClient* l, int i){
+	int found=0;
+	ElemRemoteClient* e1 = (ElemRemoteClient*) NULL;
+	if(l->size!=0){
+		e1 = l->tete;
+		while(e1 && !found){
+			found = (e1->remoteClient->dialog_socket == i);
+			if(!found) {
+				e1 = e1->suivant;
+			}else{
+				break;
+			}
+		}
+	}else{
+		return -1;
+	}
+	if(found) {
+		listeRemote_supprime(l, e1);
+	} else {
+		return -1;
+	}
+}
+
+
 
 void listeRemote_supprime(ListRemoteClient* l, ElemRemoteClient* el){
 	ElemRemoteClient* prec = el->precedent;
