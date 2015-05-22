@@ -141,10 +141,11 @@ int main(int argc, char* argv[]){
 	    			message[nrcv]='\0';
 	    			//printf("reçoit : |%s|\n",message );
 	    			int res=apdu(gen, realocate, message, response);
-	    			if( res== 0) {
+	    			if(res== 0) {
+						listeRemote_suppr_i_socket(clients_list, i);
 	    				close(sockcli);
-	                    //tab_clients[i] = -1;
 	    				FD_CLR(sockcli, &rset);
+						listeRemote_print(clients_list);
 	    			} else if(res==1){
 	    				if ( (nsnd = write (sockcli, response, strlen(response)) ) < 0 ) {
 	    					printf ("servmulti : writen error on socket");
@@ -218,7 +219,7 @@ int apdu(Generator* gen, List* liste, char* message, char* reponse){
 			nb=e->number;
 			liste_supprime(liste,e);
 		}else{
-			nb=getNumber(gen);	
+			nb=getNumber(gen);
 		}
 		sprintf(reponse,"NBR %d",nb);
 	}else if(!strncmp(message,"RES",3)){
@@ -248,8 +249,8 @@ int apdu(Generator* gen, List* liste, char* message, char* reponse){
 		sprintf(reponse,"DOK");
 		res=0;
 	}else if(strlen(reponse)==0){
-		printf("Un client à quitté inopinément\n");
-		//suppimer le client
+		printf("Un client a quitté inopinément\n");
+
 		res=0;
 	}else{
 		printf("Erreur message client reçu : |%s|\n",message );
