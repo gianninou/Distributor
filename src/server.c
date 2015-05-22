@@ -95,7 +95,7 @@ int main(int argc, char* argv[]){
 }
 
 
-int apdu(Generator* gen, char* message, char* reponse){
+int adpu(Generator* gen, char* message, char* reponse){
 	int res=1;
 	if(!strncmp(message,"CNX",3)){
 		//ajouter le client dans la liste

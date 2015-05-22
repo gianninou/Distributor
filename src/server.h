@@ -13,6 +13,6 @@
 #define MAX_CLIENTS 100
 #define BUFF_LEN 100
 
-int apdu(Generator* gen, char* message, char* reponse);
+int adpu(Generator* gen, char* message, char* reponse);
 
 #endif
