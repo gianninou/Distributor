@@ -157,7 +157,6 @@ int main(int argc, char* argv[]){
     		}
     		i++;
     	}
-    	printf("fin\n");
     	i = 0;
     }
     listeRemote_dest(clients_list);

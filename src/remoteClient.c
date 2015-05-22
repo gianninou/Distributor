@@ -34,6 +34,6 @@ void deleteRemoteClient(RemoteClient* rc){
 }
 
 void printRemoteClient(RemoteClient* rc){
-	printf("REMOTECLIENT\n");
+	printf("RemoteClient %d, socket %d\n",rc->id, rc->dialog_socket);
 	//printf("RemoteClient : id = %d, sock : %d\n ip = %s \n port = %s \n data to send = %s \n last pong sent = %d\n\n", rc->id, rc->dialog_socket, rc->ip, rc->port, rc->data_to_send, rc->timestamp_last_pong_sent);
 }
