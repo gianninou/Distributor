@@ -15,6 +15,7 @@ int main(int argc, char* argv[]){
 	char* response = (char*)xmalloc(sizeof(char)*BUFF_LEN);
 	ListRemoteClient* clients_list = listeRemote_init();
 	Generator* gen = newGenerator();
+	List* realocate = liste_init();
 
 	int sockfd, nbfd, newsockfd;
 	struct sockaddr_in  serv_addr, cli_addr;
@@ -104,12 +105,9 @@ int main(int argc, char* argv[]){
 	    				perror ("servmulti : : readn error on socket");
 	    				exit (1);
 	    			}
-	    			if(nrcv==0){
-	    				printf("Le client est parti\n");
-	    			}
 	    			memset(response, 0, BUFF_LEN);
 	    			message[nrcv]='\0';
-	    			int res=apdu(gen, message, response);
+	    			int res=apdu(gen, realocate, message, response);
 	    			if( res== 0) {
 	    				close(sockcli);
 	                    //tab_clients[i] = -1;
@@ -174,7 +172,7 @@ void *thread_ping(void *arg){
 
 
 
-int apdu(Generator* gen, char* message, char* reponse){
+int apdu(Generator* gen, List* liste, char* message, char* reponse){
 	int res=1;
 	if(!strncmp(message,"CNX",3)){
 		//ajouter le client dans la liste
@@ -208,8 +206,11 @@ int apdu(Generator* gen, char* message, char* reponse){
 	}else if(!strncmp(message,"DNX",3)){
 		//supprimer le client
 		sprintf(reponse,"DOK");
+		res=0;
 	}else if(strlen(reponse)==0){
 		printf("Un client à quitté inopinément\n");
+		//suppimer le client
+		res=0;
 	}else{
 		printf("Erreur message client reçu : |%s|\n",message );
 		res=0;

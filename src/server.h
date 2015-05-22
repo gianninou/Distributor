@@ -21,6 +21,7 @@
 #include "utils.h"
 #include "listRemoteClient.h"
 #include "remoteClient.h"
+#include "customlinkedlist.h"
 
 #define PORT_MULTICAST 10000
 #define GROUP_MULTICAST "239.13.37.92"
@@ -28,7 +29,7 @@
 #define MAX_CLIENTS 100
 #define BUFF_LEN 100
 
-int apdu(Generator* gen, char* message, char* reponse);
+int apdu(Generator* gen, List* liste, char* message, char* reponse);
 void *thread_ping(void *arg);
 
 #endif
