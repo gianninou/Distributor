@@ -38,7 +38,6 @@ int setResult(Generator* gen, int number, char* result){
 			liste_supprime(gen->runningList,elem);
 			char* str = (char*)xmalloc(sizeof(char)*(strlen(result)+100));
 			sprintf(str,"%d : %s\n",number,result);
-			printf("GENERATOR : |%s|\n",str );
 			fputs(str,gen->output);
 			fflush(gen->output);
 			free(str);

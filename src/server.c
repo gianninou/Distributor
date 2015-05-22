@@ -16,19 +16,19 @@ int main(int argc, char* argv[]){
 	ListRemoteClient* clients_list = listeRemote_init();
 	Generator* gen = newGenerator();
 
-    int sockfd, nbfd, newsockfd;
-    struct sockaddr_in  serv_addr, cli_addr;
+	int sockfd, nbfd, newsockfd;
+	struct sockaddr_in  serv_addr, cli_addr;
     //int tab_fd[FD_SETSIZE];
-    fd_set rset, pset;
-    socklen_t clilen;
+	fd_set rset, pset;
+	socklen_t clilen;
 
-    int maxfdp1, sockcli, i, nrcv, nsnd;
+	int maxfdp1, sockcli, i, nrcv, nsnd;
 
     /* Verifier le nombre de paramètre en entrée */
-    if (argc != 2){
-    	usage();
-    	exit(1);
-    }
+	if (argc != 2){
+		usage();
+		exit(1);
+	}
 
     /*
     * Ouvrir une socket (a TCP socket)
@@ -75,57 +75,65 @@ int main(int argc, char* argv[]){
     /* boucle attente client */
 
     for(;;) {
-    	pset = rset;
+    	/*for(i=0;i<FD_SETSIZE;i++){
+    		if(FD_ISSET(i,&rset)){
+    			FD_SET(i,&pset);
+    		}else{
+    			FD_CLR(i,&pset);
+    		}
+    	}*/
+    	pset=rset;
 
-        nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
-        
-        if(FD_ISSET(sockfd, &pset)) {
-        	printf("*****************************************************************************\n");
-            clilen = sizeof(cli_addr);
-            newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-            RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
-            if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
-                listeRemote_add_last(clients_list,rm);
-                FD_SET(newsockfd, &rset);
-                if(newsockfd >= maxfdp1) {
-                    maxfdp1++;
-                }
-                nbfd--;
-            }
-            listeRemote_print(clients_list);
-        }
-        printf("\n\n");
+    	nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
+    	if(FD_ISSET(sockfd, &pset)) {
+    		printf("*****************************************************************************\n");
+    		clilen = sizeof(cli_addr);
+    		newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+    		RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
+    		if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
+    			listeRemote_add_last(clients_list,rm);
+    			FD_SET(newsockfd, &rset);
+    			if(newsockfd >= maxfdp1) {
+    				maxfdp1=newsockfd+1;
+    			}
+    			nbfd--;
+    		}
+    		listeRemote_print(clients_list);
+    	}
 
-        i = 3;
-        char message[BUFF_LEN];
-        while((nbfd > 0) && (i < FD_SETSIZE)) {
-        	printf("êêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêê\n");
+    	i = 0;
+    	char message[BUFF_LEN];
+    	while((nbfd > 0) && (i <FD_SETSIZE)) {
+        	//printf("êêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêêê\n");
         	//sleep(1);
-            if(((sockcli = listeRemote_get_i_socket(clients_list, i)) > 0) && (FD_ISSET(sockcli, &pset))) {
-                printf("SOCKCLI : %d\n",sockcli );
-                if ( (nrcv= read ( sockcli, message, sizeof(message)-1) ) < 0 )  {
-                    perror ("servmulti : : readn error on socket");
-                    exit (1);
-                }
-                memset(response, 0, BUFF_LEN);
-                message[nrcv]='\0';
-                printf("SEND TO APDU : |%s|\n",message);
-                int res=apdu(gen, message, response);
-                if( res== 0) {
-                    close(sockcli);
-                    //tab_clients[i] = -1;
-                    FD_CLR(sockcli, &rset);
-                } else if(res==1){
-                    if ( (nsnd = write (sockcli, response, strlen(response)) ) < 0 ) {
-                        printf ("servmulti : writen error on socket");
-                        exit (1);
-                    }
-                }
-                //showGenerator(gen);
-                nbfd--;
-            }
-            i++;
-        }
+        	
+    		if((FD_ISSET(i, &pset))) {
+    			sockcli = listeRemote_get_i_socket(clients_list, i);
+    			if(sockcli>0){
+	    			if ( (nrcv= read ( sockcli, message, sizeof(message)-1) ) < 0 )  {
+	    				perror ("servmulti : : readn error on socket");
+	    				exit (1);
+	    			}
+	    			memset(response, 0, BUFF_LEN);
+	    			message[nrcv]='\0';
+	    			int res=apdu(gen, message, response);
+	    			if( res== 0) {
+	    				close(sockcli);
+	                    //tab_clients[i] = -1;
+	    				FD_CLR(sockcli, &rset);
+	    			} else if(res==1){
+	    				if ( (nsnd = write (sockcli, response, strlen(response)) ) < 0 ) {
+	    					printf ("servmulti : writen error on socket");
+	    					exit (1);
+	    				}
+	    			}
+	                //showGenerator(gen);
+	    			nbfd--;
+	    		}
+    		}
+    		i++;
+    	}
+    	i = 0;
     }
     listeRemote_dest(clients_list);
     close(sockfd);
@@ -182,7 +190,6 @@ int apdu(Generator* gen, char* message, char* reponse){
 		//generer un nombre
 		int nb=getNumber(gen);
 		sprintf(reponse,"NBR %d",nb);
-        printf("reponse : |%s|\n", reponse);
 	}else if(!strncmp(message,"RES",3)){
 		//enregistrer la reponse
 		int number=0;
@@ -195,7 +202,6 @@ int apdu(Generator* gen, char* message, char* reponse){
 		token = strtok(NULL, s);
 		strcpy(result,token);
 
-		printf("*****number : |%d|:|%s|\n",number,result );
 		if(setResult(gen, number, result)){
 			//sprintf(reponse,"ROK");
 		}else{
