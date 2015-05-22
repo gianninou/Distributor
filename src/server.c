@@ -84,6 +84,7 @@ int main(int argc, char* argv[]){
     		RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
     		if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
     			listeRemote_add_last(clients_list,rm);
+    			//printRemoteClient(rm);
     			FD_SET(newsockfd, &rset);
     			if(newsockfd >= maxfdp1) {
     				maxfdp1=newsockfd+1;
@@ -107,6 +108,7 @@ int main(int argc, char* argv[]){
 	    			}
 	    			memset(response, 0, BUFF_LEN);
 	    			message[nrcv]='\0';
+	    			printf("reçoit : |%s|\n",message );
 	    			int res=apdu(gen, realocate, message, response);
 	    			if( res== 0) {
 	    				close(sockcli);

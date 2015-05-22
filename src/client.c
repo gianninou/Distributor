@@ -62,8 +62,8 @@ void *thread_ping(void *arg){
 			lock();
 			sleep(1);
 			int w=write(d->socket,"PON",3);
-			unlock();
 			sleep(1);
+			unlock();
 			if(w==-1){
 				perror("Erreur ecriture");
 				exit(1);
@@ -280,6 +280,7 @@ int main(int argc, char* argv[]){
 		if(numb==0){
 			continu=0;
 		}
+		sleep(1);
 	}
 	/* DCX */
 	lock();
