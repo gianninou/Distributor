@@ -11,7 +11,7 @@ int main(int argc, char* argv[]){
 
     /* INITIALISATION */
     /* liste de client, Generator, sockets, listen, bind, ... */
-    int time_stamp;
+    //int time_stamp;
 	pthread_t thread;
 	char* response = (char*)xmalloc(sizeof(char)*BUFF_LEN);
 	ListRemoteClient* clients_list = listeRemote_init();
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]){
     }
 
     /* boucle attente client */
-    time_stamp=(unsigned)time(NULL);
+    //time_stamp=(unsigned)time(NULL);
     for(;;) {
     	pset=rset;
     	nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
@@ -167,8 +167,8 @@ int main(int argc, char* argv[]){
     	}
     	i = 0;
 
-    	int t2 = (unsigned)time(NULL);
-    	if(t2 - time_stamp >20){
+    	//int t2 = (unsigned)time(NULL);
+    	/*if(t2 - time_stamp >20){
     		ElemRemoteClient* elrm = listeRemote_tete(clients_list);
     		ElemRemoteClient* elrm2=elrm;
     		while(elrm2!=NULL){
@@ -182,7 +182,7 @@ int main(int argc, char* argv[]){
     			}
     		}
     		time_stamp=(unsigned)time(NULL);
-    	}
+    	}*/
 
 
 
