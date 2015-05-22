@@ -179,7 +179,14 @@ int apdu(Generator* gen, List* liste, char* message, char* reponse){
 		sprintf(reponse,"COK");
 	}else if(!strncmp(message,"GEN",3)){
 		//generer un nombre
-		int nb=getNumber(gen);
+		int nb;
+		if(liste->size>0){
+			Elem* e = liste_get(liste,0);
+			nb=e->number;
+			liste_supprime(liste,e);
+		}else{
+			nb=getNumber(gen);	
+		}
 		sprintf(reponse,"NBR %d",nb);
 	}else if(!strncmp(message,"RES",3)){
 		//enregistrer la reponse
