@@ -64,6 +64,7 @@ void *thread_ping(void *arg){
 			int w=write(d->socket,"PON",3);
 			sleep(1);
 			unlock();
+			//sleep(1000);
 			if(w==-1){
 				perror("Erreur ecriture");
 				exit(1);
@@ -252,7 +253,7 @@ int main(int argc, char* argv[]){
 			int i = atoi(buff+3);
 			char* res = execClientExec(cli,i);
 			//printf("la\n");
-			//sleep(4);
+			//sleep(400);
 			/* On récupere le resultat du cli ext, on l'envoie au serveur (et on s'assure de la bonne reception en option) */
 			memset(buff,0,MAX_LENGTH);
 			if(res){

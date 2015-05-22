@@ -13,7 +13,7 @@ RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
 	rc->dialog_socket = dialog_socket;
 	rc->id = current_id++;
 
-	/*err = getnameinfo((struct sockaddr*) &cli_addr, len, hbuf, sizeof(hbuf), sbuf,
+	err = getnameinfo((struct sockaddr*) &cli_addr, len, hbuf, sizeof(hbuf), sbuf,
 	                sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV);
 	if (err == 0) {
 		rc->cli_addr = cli_addr;
@@ -24,7 +24,7 @@ RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
 		rc->dialog_socket = dialog_socket;
 	} else {
 		printf("Erreur getnameinfo : %s\n", gai_strerror(err));
-	}*/
+	}
 	return rc;
 }
 
