@@ -143,7 +143,6 @@ int main(int argc, char* argv[]){
     				}
     				memset(response, 0, BUFF_LEN);
     				message[nrcv]='\0';
-    				printf("RECU : '%s'\n",message );
     				strcpy(str, message);
     				char* token = strtok(str, "|");
     				int truc=0;
@@ -159,7 +158,6 @@ int main(int argc, char* argv[]){
     						listeRemote_suppr_i_socket(clients_list, c->dialog_socket);
     						close(sockcli);
     						FD_CLR(sockcli, &rset);
-    						printf("BREAKKK\n");
     						break;
 							//listeRemote_print(clients_list);
     					} else if(res==1){
@@ -183,14 +181,10 @@ int main(int argc, char* argv[]){
     	if(t2 - time_stamp >10){
     		ElemRemoteClient* elrm = listeRemote_tete(clients_list);
     		ElemRemoteClient* elrm2=elrm;
-    		printf("T2 : %d\n",t2);
     		while(elrm2!=NULL){
-    			printf("*");
     			elrm2=elrm;
-    			printf("CLIENT : %d\n", elrm2->remoteClient->timestamp_last_pong_sent);
-    			printf("diff : %d\n", t2 - elrm2->remoteClient->timestamp_last_pong_sent);
     			if(t2 - elrm2->remoteClient->timestamp_last_pong_sent > 10){
-    				printf("kill %d\n",elrm->remoteClient->id );
+    				printf("KILL %d\n",elrm->remoteClient->id );
     				liste_add_last(realocate,elrm->remoteClient->number,NULL);
     				close(elrm->remoteClient->dialog_socket);
     				FD_CLR(elrm->remoteClient->dialog_socket, &rset);
@@ -203,7 +197,6 @@ int main(int argc, char* argv[]){
     			}
     			
     		}
-    		printf("\n");
     		time_stamp=(unsigned)time(NULL);
     	}
 
@@ -259,7 +252,6 @@ void *thread_ping(void *arg){
 
 int apdu(Generator* gen, List* liste,RemoteClient* c, char* message, char* reponse){
 	int res=1;
-	printf("APDU : |%s|\n",message );
 	if(message!=NULL){
 		if(!strncmp(message,"CNX",3)){
 			//ajouter le client dans la liste
@@ -314,8 +306,7 @@ int apdu(Generator* gen, List* liste,RemoteClient* c, char* message, char* repon
 		}
 	}else{
 		printf("Un client est parti (CTRL-C)\n");
-		res=0;
+		res=3;
 	}
-	printf("fin apdu\n");
 	return res;
 }

@@ -34,7 +34,7 @@ int setResult(Generator* gen, int number, char* result){
 	Elem* elem = liste_get(gen->runningList,number);
 	if (elem){
 		if(result[0]!='#'){
-			printf("Solution pour %d : %s\n",number, result );
+			printf("Solution pour \033[32m%d : %s\033[0m\n",number, result );
 			liste_supprime(gen->runningList,elem);
 			char* str = (char*)xmalloc(sizeof(char)*(strlen(result)+100));
 			sprintf(str,"%d : %s\n",number,result);
