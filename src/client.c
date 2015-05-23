@@ -60,15 +60,13 @@ void *thread_ping(void *arg){
 
 		if(!strncmp(buff,"PIN",3)){
 			lock();
-			sleep(1);
-			int w=write(d->socket,"PON",3);
-			sleep(1);
-			unlock();
-			//sleep(1000);
+			int w=write(d->socket,"PON|",4);
 			if(w==-1){
 				perror("Erreur ecriture");
 				exit(1);
 			}
+			unlock();
+			
 		}else{
 			printf("ERREUR thread recu : %s\n",buff );
 		}
@@ -194,7 +192,7 @@ int main(int argc, char* argv[]){
 	/* s'enregistrer sur le serveur, récuperer son ID */
 	/* CNX */
 	lock();
-	w=write(serverSocket,"CNX",3);
+	w=write(serverSocket,"CNX|",4);
 	unlock();
 	if(w==-1){
 		perror("Erreur ecriture");
@@ -233,12 +231,13 @@ int main(int argc, char* argv[]){
 	while(continu){
 		/* on envoie un GET */
 		lock();
-		w=write(serverSocket,"GEN",3);
-		unlock();
+		w=write(serverSocket,"GEN|",4);
 		if(w==-1){
 			perror("Erreur ecriture");
 			exit(1);
 		}
+		unlock();
+		
 		/* On recupere le nombre du serveur */
 		memset(buff,0,MAX_LENGTH);
 		r=read(serverSocket,buff,MAX_LENGTH-1);
@@ -252,18 +251,20 @@ int main(int argc, char* argv[]){
 			/* .... CALCUL du cli ext */
 			int i = atoi(buff+3);
 			char* res = execClientExec(cli,i);
-			//printf("la\n");
-			//sleep(400);
 			/* On récupere le resultat du cli ext, on l'envoie au serveur (et on s'assure de la bonne reception en option) */
 			memset(buff,0,MAX_LENGTH);
 			if(res){
-				sprintf(buff,"RES %d:%s", i, res);
+				sprintf(buff,"RES %d:%s|", i, res);
 			}else{
-				sprintf(buff,"RES %d:#",i);
+				sprintf(buff,"RES %d:#|",i);
 			}
 			free(res);
 			lock();
 			w=write(serverSocket,buff,strlen(buff));
+			if(w==-1){
+				perror("Erreur ecriture");
+				exit(1);
+			}
 			unlock();
 			if(w==-1){
 				perror("Erreur ecriture");
@@ -280,18 +281,18 @@ int main(int argc, char* argv[]){
 			printf("ERREUR GET : |%s|\n",buff );
 		}
 		if(numb==0){
+			thread_continu=0;
 			continu=0;
 		}
-		sleep(1);
 	}
 	/* DCX */
 	lock();
-	w=write(serverSocket,"DNX",3);
-	unlock();
+	w=write(serverSocket,"DNX|",4);
 	if(w==-1){
 		perror("Erreur ecriture");
 		exit(1);
 	}
+	unlock();
 
 	/* attente DOK */
 	r=read(serverSocket,buff,MAX_LENGTH-1);

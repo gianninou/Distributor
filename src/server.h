@@ -29,6 +29,8 @@
 #define MAX_CLIENTS 100
 #define BUFF_LEN 100
 
+#define DELIMITER "|"
+
 int apdu(Generator* gen, List* liste,RemoteClient* c, char* message, char* reponse);
 void *thread_ping(void *arg);
 

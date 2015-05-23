@@ -23,6 +23,8 @@
 #define PORT_MULTICAST 10000
 #define GROUP_MULTICAST "239.13.37.92"
 
+#define DELIMITER "|"
+
 typedef struct{
 	int socket;
 }DATA;

@@ -12,7 +12,7 @@ RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
 	rc = (RemoteClient*)xmalloc(sizeof(RemoteClient));
 	rc->dialog_socket = dialog_socket;
 	rc->id = current_id++;
-
+	rc->timestamp_last_pong_sent = (unsigned)time(NULL);
 	err = getnameinfo((struct sockaddr*) &cli_addr, len, hbuf, sizeof(hbuf), sbuf,
 	                sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV);
 	if (err == 0) {
@@ -20,8 +20,6 @@ RemoteClient* newRemoteClient(struct sockaddr_in cli_addr, int dialog_socket){
 		strcpy(rc->ip, hbuf);
 		strcpy(rc->port, sbuf);
 		strcpy(rc->data_to_send, "NULL");
-		rc->timestamp_last_pong_sent = -1;
-		rc->dialog_socket = dialog_socket;
 	} else {
 		//printf("Erreur getnameinfo : %s\n", gai_strerror(err));
 	}
