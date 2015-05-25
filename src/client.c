@@ -157,9 +157,15 @@ int main(int argc, char* argv[]){
 	/*  Création du socket */
 	/***********************/
 	 for (rp = result; rp != NULL; rp = rp->ai_next) {
+	 	
         serverSocket = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
 		if (serverSocket!=-1){
 			error = connect (serverSocket, rp->ai_addr, rp->ai_addrlen );
+			if (rp->ai_family == AF_INET){
+		 		printf("IPv4\n");
+		 	}else{
+		 		printf("IPv6\n");
+		 	}
 			if(error ==-1 ){
 				perror ("erreur connect");
 				exit (1);

@@ -26,7 +26,7 @@ int main(int argc, char* argv[]){
 	fd_set rset, pset;
 	socklen_t clilen;
 
-	int maxfdp1, sockcli, i, nrcv, nsnd, s;
+	int maxfdp1=0, sockcli, i, nrcv, nsnd, s;
 
     /* Verifier le nombre de paramètre en entrée */
 	if (argc != 2){
@@ -63,6 +63,11 @@ int main(int argc, char* argv[]){
 	/***********************/
 	/*  Création du socket */
 	/***********************/
+	int tab_fd[10];
+	memset(tab_fd,0,10);
+	int maxfd=0;
+	FD_ZERO(&rset);
+	FD_ZERO(&pset);
     for (rp = result; rp != NULL; rp = rp->ai_next) {
     	sockfd = socket(rp->ai_family, rp->ai_socktype,rp->ai_protocol);
     	if (sockfd!=-1){
@@ -72,34 +77,41 @@ int main(int argc, char* argv[]){
     			perror ("servmulti : erreur bind\n");
     			exit (1);
     		}
-    		break;
-    	}
+    		if (sockfd <0) {
+		    	perror ("erreur socket");
+		    	exit (1);
+		    }
+		    // if(rp==NULL){
+		    // 	printf("ERROR\n");
+		    // 	exit(1);
+		    // }
+
+		    /*memset( (char*) &serv_addr,0, sizeof(serv_addr) );
+		    serv_addr.sin_family = PF_INET;
+		    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+		    serv_addr.sin_port = htons(atoi(argv[1]));*/
+
+		    /* Paramétrer le nombre de connexion "pending" */
+		    if (listen(sockfd, SOMAXCONN) <0) {
+		    	perror ("servmulti : erreur listen\n");
+		    	exit (1);
+		    }
+		    maxfdp1 = sockfd + 1;
+			
+			FD_SET(sockfd, &rset);
+			if(maxfd<10){
+		    	tab_fd[maxfd]=sockfd;
+		    	maxfd++;
+			}else{
+				break;
+			}
+		    
+		}
     }
 
 
-    if (sockfd <0) {
-    	perror ("erreur socket");
-    	exit (1);
-    }
-    if(rp==NULL){
-    	printf("ERROR\n");
-    	exit(1);
-    }
 
-    /*memset( (char*) &serv_addr,0, sizeof(serv_addr) );
-    serv_addr.sin_family = PF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(atoi(argv[1]));*/
 
-    /* Paramétrer le nombre de connexion "pending" */
-    if (listen(sockfd, SOMAXCONN) <0) {
-    	perror ("servmulti : erreur listen\n");
-    	exit (1);
-    }
-    maxfdp1 = sockfd + 1;
-    FD_ZERO(&rset);
-    FD_ZERO(&pset);
-    FD_SET(sockfd, &rset);
 
 
     /* Lancement du thread */
@@ -113,21 +125,24 @@ int main(int argc, char* argv[]){
     for(;;) {
     	pset=rset;
     	nbfd = select(maxfdp1, &pset, NULL, NULL, NULL);
-    	if(FD_ISSET(sockfd, &pset)) {
-    		clilen = sizeof(cli_addr);
-    		newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-    		RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
-    		if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
-    			listeRemote_add_last(clients_list,rm);
-    			//printRemoteClient(rm);
-    			FD_SET(newsockfd, &rset);
-    			if(newsockfd >= maxfdp1) {
-    				maxfdp1=newsockfd+1;
-    			}
-    			nbfd--;
-    		}
-    		//listeRemote_print(clients_list);
-    	}
+    	int ii=0;
+    	for(ii=0;ii<maxfd;ii++){
+	    	if(FD_ISSET(tab_fd[ii], &pset)) {
+	    		clilen = sizeof(cli_addr);
+	    		newsockfd = accept(tab_fd[ii], (struct sockaddr *)&cli_addr, &clilen);
+	    		RemoteClient* rm = newRemoteClient(cli_addr, newsockfd);
+	    		if(listeRemote_get_size(clients_list) != MAX_CLIENTS) {
+	    			listeRemote_add_last(clients_list,rm);
+	    			//printRemoteClient(rm);
+	    			FD_SET(newsockfd, &rset);
+	    			if(newsockfd >= maxfdp1) {
+	    				maxfdp1=newsockfd+1;
+	    			}
+	    			nbfd--;
+	    		}
+	    		//listeRemote_print(clients_list);
+	    	}
+	    }
 
     	i = 0;
     	char message[BUFF_LEN];
