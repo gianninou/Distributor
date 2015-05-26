@@ -43,7 +43,7 @@ char* execClientExec(ClientExec* cli, int nb){
 	close(fd[1]);
 
 	/* TODO check return */
-	sleep(1);
+	//sleep(1);
 	waitpid(pid,NULL,0);
 
 	int r = read(fd[0],result,MAX_LENGTH-1);

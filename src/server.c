@@ -195,12 +195,13 @@ int main(int argc, char* argv[]){
     	i = 0;
 
     	int t2 = (unsigned)time(NULL);
-    	if(t2 - time_stamp >10){
+    	if(t2 - time_stamp >13){
+    		printf("Verification Timestamp\n");
     		ElemRemoteClient* elrm = listeRemote_tete(clients_list);
     		ElemRemoteClient* elrm2=elrm;
     		while(elrm2!=NULL){
     			elrm2=elrm;
-    			if(t2 - elrm2->remoteClient->timestamp_last_pong_sent > 10){
+    			if(t2 - elrm2->remoteClient->timestamp_last_pong_sent > 20){
     				printf("KILL %d\n",elrm->remoteClient->id );
     				liste_add_last(realocate,elrm->remoteClient->number,NULL);
     				close(elrm->remoteClient->dialog_socket);
@@ -261,7 +262,7 @@ void *thread_ping(void *arg){
 			perror ("erreur sendto thread");
 			/*exit (1);*/
 		}else{
-			sleep(8);
+			sleep(4);
 
 		}
 	}
