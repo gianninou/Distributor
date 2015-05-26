@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include <signal.h>
+
 #include <getopt.h>
 #include <pthread.h>
 

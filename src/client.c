@@ -72,8 +72,12 @@ void *thread_ping(void *arg){
 		}
 
 	}
-
-
+	if(setsockopt(socketServeur,IPPROTO_IP,IP_DROP_MEMBERSHIP,&imr,sizeof(imr))<0){
+		perror("setsockopt IP_ADD_MEMBERSHIP err");
+		exit(1);
+	}
+	close(socketServeur);
+	printf("Fin thread client\n");
 	pthread_exit(NULL);
 } 
 

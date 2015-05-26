@@ -5,6 +5,8 @@ void usage(void){
 	printf("usage : ./server numero_port_serveur\n");
 }
 
+
+
 int main(int argc, char* argv[]){
 	printf("Lancement du serveur ...\n");
 
@@ -219,7 +221,9 @@ int main(int argc, char* argv[]){
 
     }
     listeRemote_dest(clients_list);
-    close(sockfd);
+    for(i=0;i<maxfd;i++){
+    	close(tab_fd[i]);
+	}
     /* creer un thread pour PING les clients avec gestion des pertes de connexion*/
 
     /* Si client déjà enregistré, alors repondre à ces demandes */
@@ -261,6 +265,9 @@ void *thread_ping(void *arg){
 
 		}
 	}
+	close(serverSocket);
+	printf("Fin thread Server\n");
+	pthread_exit(NULL);
 }
 
 

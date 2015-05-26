@@ -16,6 +16,8 @@
 #include <netdb.h>
 #include <errno.h>
 
+#include <signal.h>
+
 
 #include "generator.h"
 #include "utils.h"
