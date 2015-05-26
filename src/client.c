@@ -29,13 +29,13 @@ void *thread_ping(void *arg){
 	imr.imr_interface.s_addr=INADDR_ANY;
 
 	if(setsockopt(socketServeur,IPPROTO_IP,IP_ADD_MEMBERSHIP,&imr,sizeof(imr))<0){
-		perror("settruc err");
+		perror("setsockopt IP_ADD_MEMBERSHIP err");
 		exit(1);
 	}
 
 	unsigned long on=1;
 	if(setsockopt(socketServeur,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(imr))<0){
-		perror("settruc err reuse");
+		perror("setsockopt SO_REUSEADDR err");
 		exit(1);
 	}
 
